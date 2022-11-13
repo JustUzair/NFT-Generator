@@ -1,0 +1,10 @@
+extends base
+
+block content
+    main.main
+        .error
+            .error__title
+                h2.heading-secondary.heading-secondary--error Uh oh! Something went wrong!   
+                //- h2.error__emoji 😢 🤯
+            h1(center style="font-size:12rem; font-weight:700; font-style:italic")=statusCode
+            .error__msg=msg
