@@ -3,6 +3,14 @@ const crypto = require("crypto");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const artSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "An art must have a name"],
+  },
+  description: {
+    type: String,
+    required: [true, "An art must have a description"],
+  },
   photo: {
     type: String,
     required: [true, "An art must have a photo"],

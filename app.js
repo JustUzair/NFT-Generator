@@ -14,6 +14,7 @@ const compression = require("compression");
 
 const userRouter = require("./routes/userRoutes");
 const artRouter = require("./routes/artRoutes");
+const viewRouter = require("./routes/viewRoutes");
 
 const globalErrorHandler = require("./controllers/errorController");
 const app = express();
@@ -90,8 +91,7 @@ app.use(compression());
 
 //All the routes above can be bind into one using express.Router() middleware
 // ------------Multiple Routers
-// app.use("/", viewRouter);
-
+app.use("/", viewRouter);
 app.use("/api/v1/arts", artRouter);
 app.use("/api/v1/users", userRouter);
 

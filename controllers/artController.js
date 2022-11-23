@@ -4,9 +4,17 @@ const sharp = require("sharp");
 const createImage = require("./nftGen");
 const { promisify } = require("util");
 const multerStorage = multer.memoryStorage();
-const { existsSync, mkdirSync, rmSync, rmdirSync, readdir } = require("fs");
+const {
+  existsSync,
+  mkdirSync,
+  rmSync,
+  rmdirSync,
+  readdir,
+  rm,
+  //   writeFileSync,
+} = require("fs");
 const Art = require("../models/artModel");
-const { mkdir, rmdir } = require("fs").promises;
+const { mkdir, rmdir, writeFile } = require("fs").promises;
 
 //only allow images to be uploaded
 const multerFilter = (req, file, cb) => {
@@ -24,15 +32,14 @@ exports.resizeArt = catchAsync(async (req, res, next) => {
 
   //   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
   req.file.filename = req.file.originalname;
-  console.log(req.file);
-  await sharp(req.file.buffer)
-    // .resize(256, 256)
-    .toFile(`public/img/arts/${req.user.id}/layers/${req.file.filename}`);
-  //   const cloudinary_URL = await cloudinary.uploader.upload(
-  //     `public/img/users-${req.user}/${req.file.filename}`
+  //   console.log(req.file.buffer.toString());
+  //   (await sharp(req.file.buffer)).toFile(
+  //     `public/img/arts/${req.user.id}/layers/${req.file.filename}`
   //   );
-  //   // console.log('CLOUDINARY URL -----------------' + cloudinary_URL.url);
-  //   req.file.filename = cloudinary_URL.url;
+  await writeFile(
+    `public/img/arts/${req.user.id}/layers/${req.file.filename}`,
+    req.file.buffer
+  );
   res.status(200).json({
     status: "success",
   });
@@ -40,13 +47,16 @@ exports.resizeArt = catchAsync(async (req, res, next) => {
 
 exports.generateArts = catchAsync(async (req, res, next) => {
   const user = req.user;
-  console.log("User.id : ", user.id);
+  //   console.log("User.id : ", user.id);
 
   if (existsSync(`./public/img/arts/${user.id}/out/`))
     rmdirSync(`./public/img/arts/${user.id}/out/`, {
       recursive: true,
       force: true,
     });
+  // rm(`./public/img/arts/${user.id}/out/`, {
+  //   recursive: true,
+  // });
   if (!existsSync(`./public/img/arts/${user.id}/out/`)) {
     mkdirSync(`./public/img/arts/${user.id}/out/`);
   }
@@ -109,7 +119,7 @@ exports.generateArts = catchAsync(async (req, res, next) => {
       (attributeCount.mouth - 1 != 0 ? attributeCount.mouth - 1 : 1) *
       (attributeCount.beard - 1 != 0 ? attributeCount.beard - 1 : 1) *
       (attributeCount.head - 1 != 0 ? attributeCount.head - 1 : 1);
-    let index = Math.min(possibleCombinations, 999);
+    let index = Math.min(possibleCombinations, 199);
     do {
       try {
         await createImage(index, user.id, attributeCount);

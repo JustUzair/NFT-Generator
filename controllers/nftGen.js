@@ -90,6 +90,7 @@ async function createImage(index, user, attribute) {
       createImage();
     } else {
       const name = getRandomName();
+      const description = `A drawing of ${name.split("-").join(" ")}`;
       //   console.log(name);
       face[takenFaces] = face;
 
@@ -104,7 +105,7 @@ async function createImage(index, user, attribute) {
 
       const meta = {
         name,
-        description: `A drawing of ${name.split("-").join(" ")}`,
+        description,
         image: `${index}.png`,
         attributes: [
           {
@@ -131,6 +132,8 @@ async function createImage(index, user, attribute) {
         artist: user,
         photo: `${index}.png`,
         price: basePrice,
+        name,
+        description,
       });
     }
   } catch (err) {

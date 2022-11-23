@@ -1,6 +1,5 @@
 extends base 
 block append head 
-    script(src='/js/alerts.js')
     script(src=`/js/validatePassword.js` defer)
 block content
     
@@ -20,7 +19,13 @@ block content
                 .form__group.ma-bt-md
                     label.form__label(for='signup-password-confirm') Confirm Password
                     input#signup-password-confirm.form__input(type='password', placeholder='••••••••', required, minlength='8')
-                    h3.pswd-invalid.hidden(style="color:red; font-style:italic") Passwords do not match!!
+                    h3.pswd-invalid.hidden(style='color:red; font-style:italic') Passwords do not match!!
+                .form__group.ma-bt-md
+                    label.form__label(for='signup-password-confirm') Role
+                    select.form__input#ddlViewBy()
+                        option.form__input(value='artist' ) Artist
+                        option.form__input(value='user'  selected='selected') User
                 .form__group
                     button.btn.btn--green.btn--signup Create Account
-                    
+    script(src='/js/signup.js')
+                   

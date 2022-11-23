@@ -59,10 +59,6 @@ exports.getOne = (Model, populateOptions) =>
 
 exports.getAll = Model =>
   catchAsync(async (req, res, next) => {
-    // //************Allow Nested queries, for example,  /tour/:id/reviews**********
-    // let filter = {};
-    // if (req.params.tourId) filter = { tour: req.params.tourId };
-    // //******************************************
     let filter = {};
     const features = new APIFeatures(Model.find(filter), req.query)
       .filter()

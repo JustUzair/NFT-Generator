@@ -79,12 +79,17 @@ userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } });
   next();
 });
-userSchema.post("save", async function (next) {
-  if (!existsSync(`./public/img/arts/${this._id}`)) {
-    await mkdir(`./public/img/arts/${this._id}`);
-  }
-  if (existsSync(`./public/img/arts/${this._id}`)) {
-    await mkdir(`./public/img/arts/${this._id}/layers`);
+userSchema.pre("save", async function (next) {
+  try {
+    if (this.role !== "artist") return next(); // prevent making of dirs if the new user's role isn't artist
+    if (!existsSync(`./public/img/arts/${this._id}`)) {
+      await mkdir(`./public/img/arts/${this._id}`);
+    }
+    if (existsSync(`./public/img/arts/${this._id}`)) {
+      await mkdir(`./public/img/arts/${this._id}/layers`);
+    }
+  } catch (err) {
+    return next();
   }
 });
 userSchema.methods.correctPassword = async function (

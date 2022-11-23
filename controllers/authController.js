@@ -1,6 +1,4 @@
 const User = require("../models/userModel");
-// const Tour = require('../models/tourModel');
-
 const jwt = require("jsonwebtoken");
 const AppError = require("./../utils/appErrors");
 const catchAsync = require("../utils/catchAsync");
