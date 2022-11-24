@@ -4,10 +4,14 @@
         svg.feather.feather-menu(xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round')
             path(d='M3 12h18M3 6h18M3 18h18')
     .navlinkwrap
-        span.navlink.selectedlink Home
-        span.navlink My Profile
-        span.navlink Activity
-        span.navlink How It Works
+        span.navlink.selectedlink.home
+            a(href="/") Home
+        if user && user.role=='artist'
+            span.navlink.uploadedFiles 
+                a(href="/myUploads") View Layers
+            span.navlink.artGen
+                a(href=`/artists/${user._id}/arts`) View Generated Arts
+        span.navlink.working How It Works
     if !user
         .buttonwrap
             a(href='/signup')
@@ -22,5 +26,6 @@
             a.user__profile--name(href='/me' style='text-decoration:none;')= user.name.split(' ')[0]
         button.createbtn.selectedbtn.nav__btn--logout LOGOUT
     script(src='/js/login.js' defer)
+    script(src='/js/changeActiveNav.js' defer)
                
     

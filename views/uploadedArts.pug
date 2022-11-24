@@ -1,0 +1,83 @@
+extends base
+block content
+    .artists
+        .title
+            p.titlebold(style='text-decoration:underline;') Background
+        .artists--container
+            if attributeCount.bg <=0 
+                h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Background layer uploaded by this user
+            else 
+                -for(i=0;i<attributeCount.beard;i++){
+                    .nft
+                        .main(style='background:#fff')
+                            img.tokenImage(src=`/img/arts/${user._id}/layers/bg${i}.svg` alt=`Background ${i} layer`)
+                -}
+        .title
+            p.titlebold(style='text-decoration:underline;') Beard
+        .artists--container
+            if attributeCount.beard <=0 
+                h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Beard layer uploaded by this user
+            else 
+                -for(i=0;i<attributeCount.beard;i++){
+                    .nft
+                        .main(style='background:#fff')
+                            img.tokenImage(src=`/img/arts/${user._id}/layers/beard${i}.svg` alt=`Beard ${i} layer`)
+                -}
+        
+        .title
+            p.titlebold(style='text-decoration:underline;') Eyes
+        .artists--container
+            if attributeCount.eyes <=0 
+                    h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Eyes layer uploaded by this user
+            else 
+                -for(i=0;i<attributeCount.eyes;i++){
+                    .nft
+                        .main(style='background:#fff')
+                            img.tokenImage(src=`/img/arts/${user._id}/layers/eyes${i}.svg` alt=`Eyes ${i} layer`)
+                -}
+        .title
+            p.titlebold(style='text-decoration:underline;') Hair
+        .artists--container
+            if attributeCount.hair <=0 
+                    h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Hair layer uploaded by this user
+            else 
+                -for(i=0;i<attributeCount.hair;i++){
+                    .nft
+                        .main(style='background:#fff')
+                            img.tokenImage(src=`/img/arts/${user._id}/layers/hair${i}.svg` alt=`Hair ${i} layer`)
+                -}
+        .title
+            p.titlebold(style='text-decoration:underline;') Head
+        .artists--container
+            if attributeCount.head <=0 
+                    h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Head layer uploaded by this user
+            else 
+                -for(i=0;i<attributeCount.head;i++){
+                    .nft
+                        .main(style='background:#fff')
+                            img.tokenImage(src=`/img/arts/${user._id}/layers/head${i}.svg` alt=`Head ${i} layer`)
+                -}
+        .title
+            p.titlebold(style='text-decoration:underline;') Mouth
+        .artists--container
+            if attributeCount.mouth <=0 
+                    h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Mouth layer uploaded by this user
+            else 
+                -for(i=0;i<attributeCount.mouth;i++){
+                    .nft
+                        .main(style='background:#fff')
+                            img.tokenImage(src=`/img/arts/${user._id}/layers/mouth${i}.svg` alt=`Mouth ${i} layer`)
+                -}
+        .title
+            p.titlebold(style='text-decoration:underline;') Nose
+        .artists--container
+            if attributeCount.nose <=0 
+                    h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Nose layer uploaded by this user
+            else 
+                -for(i=0;i<attributeCount.nose;i++){
+                    .nft
+                        .main(style='background:#fff')
+                            img.tokenImage(src=`/img/arts/${user._id}/layers/nose${i}.svg` alt=`Nose ${i} layer`)
+                -}
+            
+

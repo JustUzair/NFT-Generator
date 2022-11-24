@@ -2,7 +2,7 @@ const catchAsync = require("./../utils/catchAsync");
 const AppError = require("../utils/appErrors");
 const User = require("./../models/userModel");
 const Art = require("./../models/artModel");
-
+const { readdir } = require("fs");
 const crypto = require("crypto");
 
 exports.getOverview = catchAsync(async (req, res, next) => {
@@ -28,6 +28,47 @@ exports.getGeneratedArts = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getMyUploads = catchAsync(async (req, res, next) => {
+  const prom = new Promise((resolve, reject) => {
+    return readdir(
+      `./public/img/arts/${req.user.id}/layers`,
+      (err, filenames) => (err != null ? reject(err) : resolve(filenames))
+    );
+  });
+  const files = await prom;
+  console.log(files);
+  const attributeCount = {
+    beard: 0,
+    bg: 0,
+    eyes: 0,
+    hair: 0,
+    head: 0,
+    mouth: 0,
+    nose: 0,
+  };
+  files.map(file => {
+    if (file.startsWith("beard")) {
+      attributeCount.beard = attributeCount.beard + 1;
+    } else if (file.startsWith("bg")) {
+      attributeCount.bg = attributeCount.bg + 1;
+    } else if (file.startsWith("eyes")) {
+      attributeCount.eyes = attributeCount.eyes + 1;
+    } else if (file.startsWith("hair")) {
+      attributeCount.hair = attributeCount.hair + 1;
+    } else if (file.startsWith("head")) {
+      attributeCount.head = attributeCount.head + 1;
+    } else if (file.startsWith("mouth")) {
+      attributeCount.mouth = attributeCount.mouth + 1;
+    } else if (file.startsWith("nose")) {
+      attributeCount.nose = attributeCount.nose + 1;
+    }
+  });
+  //   console.log(`Attribute Count : ${JSON.stringify(attributeCount)}`);
+  res.status(200).render("uploadedArts", {
+    title: "My Uploads",
+    attributeCount,
+  });
+});
 exports.getLoginForm = (req, res) => {
   res.status(200).render("login", {
     title: "Login",

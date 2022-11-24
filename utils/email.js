@@ -46,7 +46,7 @@ module.exports = class Email {
     await this.newTransport().sendMail(mailOptions);
   }
   async sendWelcome() {
-    await this.send("welcome", "Welcome to Mintrrs Family 🌿🌿!");
+    await this.send("welcome", "Welcome to Mintrrs Family 🎉🙏!");
   }
   async sendPasswordReset() {
     await this.send(
