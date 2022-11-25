@@ -14,6 +14,7 @@ const {
   //   writeFileSync,
 } = require("fs");
 const Art = require("../models/artModel");
+const AppError = require("../utils/appErrors");
 const { mkdir, rmdir, writeFile } = require("fs").promises;
 
 //only allow images to be uploaded
@@ -48,21 +49,36 @@ exports.resizeArt = catchAsync(async (req, res, next) => {
 exports.generateArts = catchAsync(async (req, res, next) => {
   const user = req.user;
   //   console.log("User.id : ", user.id);
+  //--------------------------Uncomment if you want to regenerate arts--------------------------
+  //   try {
+  //     await Art.deleteMany({ artist: user.id });
+  //     if (existsSync(`./public/img/arts/${user.id}/out/`))
+  //       rmdirSync(`./public/img/arts/${user.id}/out/`, {
+  //         recursive: true,
+  //         force: true,
+  //       });
+  //   } catch (err) {}
 
-  if (existsSync(`./public/img/arts/${user.id}/out/`))
-    rmdirSync(`./public/img/arts/${user.id}/out/`, {
-      recursive: true,
-      force: true,
+  //-----------------------------------------------------------------------------------------------
+
+  try {
+    let outProm = new Promise((resolve, reject) => {
+      return readdir(`./public/img/arts/${user.id}/out`, (err, filenames) =>
+        err != null ? reject(err) : resolve(filenames)
+      );
     });
+    const out = await outProm;
+    if (out.length > 0)
+      return next(new AppError("Your arts have already been generated"));
+  } catch (err) {}
+
   // rm(`./public/img/arts/${user.id}/out/`, {
   //   recursive: true,
   // });
   if (!existsSync(`./public/img/arts/${user.id}/out/`)) {
     mkdirSync(`./public/img/arts/${user.id}/out/`);
   }
-  try {
-    await Art.deleteMany({ artist: user.id });
-  } catch (err) {}
+
   const prom = new Promise((resolve, reject) => {
     return readdir(`./public/img/arts/${user.id}/layers`, (err, filenames) =>
       err != null ? reject(err) : resolve(filenames)
@@ -111,7 +127,7 @@ exports.generateArts = catchAsync(async (req, res, next) => {
         "You don't have any arts/insufficient arts uploaded, please upload arts to generate NFTs",
     });
   } else {
-    const possibleCombinations =
+    let possibleCombinations =
       (attributeCount.bg - 1 != 0 ? attributeCount.bg - 1 : 1) *
       (attributeCount.hair - 1 != 0 ? attributeCount.hair - 1 : 1) *
       (attributeCount.eyes - 1 != 0 ? attributeCount.eyes - 1 : 1) *
@@ -119,6 +135,7 @@ exports.generateArts = catchAsync(async (req, res, next) => {
       (attributeCount.mouth - 1 != 0 ? attributeCount.mouth - 1 : 1) *
       (attributeCount.beard - 1 != 0 ? attributeCount.beard - 1 : 1) *
       (attributeCount.head - 1 != 0 ? attributeCount.head - 1 : 1);
+    if (possibleCombinations == 1) possibleCombinations = 0;
     let index = Math.min(possibleCombinations, 199);
     do {
       try {

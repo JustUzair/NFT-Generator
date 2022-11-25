@@ -110,7 +110,7 @@ async function createImage(index, user, attribute) {
         attributes: [
           {
             beard: "",
-            rarity: 0.5,
+            rarity: 0.01,
           },
         ],
       };

@@ -36,7 +36,6 @@ exports.getMyUploads = catchAsync(async (req, res, next) => {
     );
   });
   const files = await prom;
-  console.log(files);
   const attributeCount = {
     beard: 0,
     bg: 0,
