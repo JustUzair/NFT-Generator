@@ -8,25 +8,6 @@ const AppError = require("../utils/appErrors");
 const factory = require("./handlerFactory");
 const cloudinary = require("cloudinary").v2;
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true,
-});
-//file upload package : multer
-
-// const multerStorage = multer.diskStorage({
-// 	destination: (req, file, cb) => {
-// 		cb(null, 'public/img/users');
-// 	},
-// 	filename: (req, file, cb) => {
-// 		let ext = file.mimetype.split('/')[1]; // mimetype: 'image/jpeg',
-// 		if (file.mimetype.split('/')[1].startsWith('svg')) ext = 'svg';
-// 		cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-// 	}
-// });
-
 const multerStorage = multer.memoryStorage();
 
 //only allow images to be uploaded
@@ -50,11 +31,6 @@ exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
       quality: 90, // percent
     })
     .toFile(`public/img/users/${req.file.filename}`);
-  //   const cloudinary_URL = await cloudinary.uploader.upload(
-  //     `public/img/users-${req.user}/${req.file.filename}`
-  //   );
-  //   // console.log('CLOUDINARY URL -----------------' + cloudinary_URL.url);
-  //   req.file.filename = cloudinary_URL.url;
   next();
 });
 const filterObj = (obj, ...allowedFields) => {
