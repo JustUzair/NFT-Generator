@@ -5,6 +5,7 @@ const authController = require("../controllers/authController");
 
 // router.use(authController.isLoggedIn);
 router.get("/", authController.isLoggedIn, viewController.getOverview);
+router.get("/connectWallet", viewController.getWalletConnect);
 router.use(viewController.alerts);
 router.get(
   "/artists/:id/arts",

@@ -18,5 +18,4 @@ router
     authController.restrictTo("artist"),
     artController.generateArts
   );
-// router.route("/artists/:id/arts").get(artController.generateArts);
 module.exports = router;

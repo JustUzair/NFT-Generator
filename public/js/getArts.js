@@ -28,6 +28,6 @@ if (getArtsPFPs)
   getArtsPFPs.forEach(item => {
     item.addEventListener("click", e => {
       //   console.log(e.target.closest(".btn-artist-arts").dataset.id);
-      getArts(document.querySelector(".btn-artist-arts").dataset.id);
+      getArts(e.target.closest(".artist--pfp").dataset.id);
     });
   });

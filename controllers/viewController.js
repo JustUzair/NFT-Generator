@@ -5,6 +5,11 @@ const Art = require("./../models/artModel");
 const { readdir } = require("fs");
 const crypto = require("crypto");
 
+exports.getWalletConnect = (req, res) => {
+  res.status(200).render("connectWallet", {
+    title: "Connect Wallet",
+  });
+};
 exports.getOverview = catchAsync(async (req, res, next) => {
   // 1. Get tour data from collection
   const artists = await User.find({ role: "artist" });

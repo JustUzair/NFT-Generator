@@ -124,7 +124,7 @@ exports.generateArts = catchAsync(async (req, res, next) => {
     res.status(404).json({
       status: "fail",
       message:
-        "You don't have any arts/insufficient arts uploaded, please upload arts to generate NFTs",
+        "You don't have any / insufficient layers uploaded, please upload layers to generate NFTs",
     });
   } else {
     let possibleCombinations =

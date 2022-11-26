@@ -57,7 +57,7 @@ block content
         each artist in artists
             #busicard
                 .user
-                    img.artist--pfp(src=`/img/users/${artist.photo}` alt=artist.name)
+                    img.artist--pfp(src=`/img/users/${artist.photo}` alt=artist.name data-id=`${artist._id}`)
                 h1=artist.name
                 ul.info
                     li Artist
