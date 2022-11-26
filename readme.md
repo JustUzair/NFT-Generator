@@ -43,12 +43,12 @@ The logics / features that are implemented on top of [Fireship.io](https://www.y
 
 ## Screenshots
 
-![Home Page](/Screenshots/1.JPG?raw=true)
-![Home Page (Artists Section)](/Screenshots/2.JPG?raw=true)
-![Home Page (After Login)](/Screenshots/3.JPG?raw=true)
-![Login Page](/Screenshots/4.JPG?raw=true)
-![Login Auth](/Screenshots/5.JPG?raw=true)
-![Signup Page](/Screenshots/6.JPG?raw=true)
+![Home Page](/Screenshots/1.JPG?raw=true "Home Page")
+![Home Page (Artists Section)](/Screenshots/2.JPG?raw=true "Home Page (Artists Section)")
+![Home Page (After Login)](/Screenshots/3.JPG?raw=true "Home Page (After Login)")
+![Login Page](/Screenshots/4.JPG?raw=true "Login Page")
+![Login Auth](/Screenshots/5.JPG?raw=true "Login Auth")
+![Signup Page](/Screenshots/6.JPG?raw=true "Signup Page")
 ![Forgot Password Page](/Screenshots/7.JPG?raw=true)
 ![Password Reset Link Sent to Email](/Screenshots/8.JPG?raw=true)
 ![Reset Password Page](/Screenshots/9.JPG?raw=true)
