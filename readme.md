@@ -37,6 +37,29 @@ The logics / features that are implemented on top of [Fireship.io](https://www.y
 
 - Global Error Handling, both on server as well as the client side.
 
+## Possible Prospective Features
+
+Before I started implementing this project, I talked to a few friends of mine at the college to check if this project can be implemented or not,
+but the more I got indulged with this project and explored, the more I realised how complex this project is.
+The project that I wanted to implement may not be fully-implemented but it's almost around completion.
+Now, that I am this deep into it, I think that it might not be implemented 100% after all, due to some unforeseen circumstances, such as no existing referance / examples
+that show how to use NodeJS with Blockchain, on a broader picture how to use Web3 alongside Web2.
+Thus, since I am just starting out, I feel like this is due to my inexperience and unfamiliarity with Blockchain and Web3.
+For now it seems to be a roadblock for me but, I hope to solve this issue too once I gain some experience in Blockchain and Web3.
+
+I implmeneted the feature of web3 wallet connection and it took me forever to find out some good options for the wallets.
+Here are my observations that needs to be implemented to make this project complete (100%):
+
+- Majority Wallet APIs are implemented for Next.js/React.js
+
+- One prospective feature is to migrate SSR pug templates to a React Frontend/Next.js
+
+- Make the project much more de-centralized, by learning the blockchain.
+
+- Improve the art generation logic from being recursive to a much efficient iterative solution or better.
+
+- Add Wallet Connect as the main login feature.
+
 ## Acknowledgements
 
 - Inspiration [Fireship.io](https://www.youtube.com/watch?v=meTpMP0J5E8)
@@ -57,6 +80,12 @@ The logics / features that are implemented on top of [Fireship.io](https://www.y
 ![User Profile Page](/Screenshots/12.JPG?raw=true "User Profile Page")
 ![Upload New Profile Photo of user](/Screenshots/13.JPG?raw=true "Upload New Profile Photo of user")
 ![User Profile Page Change Password Section](/Screenshots/14.JPG?raw=true "User Profile Page Change Password Section")
+
+## Tech Stack
+
+**Client:** Pug Template Engine (SSR - Server Side Rendering)
+
+**Server:** Node.js, Express, MongoDB
 
 ## Installation
 
@@ -103,9 +132,3 @@ To run this project, you will need to add the following environment variables to
 `SENDGRID_USERNAME`=`SENDGRID_EMAIL_API_USERNAME`
 
 `SENDGRID_PASSWORD`=`SENDGRID_EMAIL_API_PASSWORD`
-
-## Tech Stack
-
-**Client:** Pug Template Engine (SSR - Server Side Rendering)
-
-**Server:** Node.js, Express, MongoDB
