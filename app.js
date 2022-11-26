@@ -113,29 +113,31 @@ app.use(cookieParser());
 */
 app.use(mongoSanitize());
 
-// Data Sanitization against XSS
+/*|------------------------------------------------------------------------|
+  |                   Data Sanitization against XSS                        |
+  |  Node.js Connect middleware to sanitize user input coming from POST    |
+  |  body, GET queries, and url params.                                    |
+  |  This will sanitize any data in req.body, req.query, and req.params    |
+  |  IMPORTANT - USE THIS BEFORE ANY ROUTES IS ACCESSED                    |
+  |------------------------------------------------------------------------|
+*/
 app.use(xss());
 
-// Prevent parameter pollution
-app.use(
-  hpp({
-    whitelist: [
-      "duration",
-      "ratingsQuantity",
-      "ratingsAverage",
-      "maxGroupSize",
-      "difficulty",
-      "price",
-    ],
-  })
-);
+/*|------------------------------------------------------------------------|
+  |     Express populates parameters with same name in an array            |
+  |     ex : GET /search?firstname="JOHN"&firstname="JAKE"                 |
+  |     ==> Results in ['JOHN' 'JAKE'] for single parameter firstname      |
+  |------------------------------------------------------------------------|     
+*/
+app.use(hpp()); // Prevent parameter pollution
+
+// The middleware will attempt to compress response bodies for all request that traverse through the middleware
 app.use(compression());
 
-//All the routes above can be bind into one using express.Router() middleware
 // ------------Multiple Routers
-app.use("/", viewRouter);
-app.use("/api/v1/arts", artRouter);
-app.use("/api/v1/users", userRouter);
+app.use("/", viewRouter); // Render Views
+app.use("/api/v1/arts", artRouter); // API Route for artists/arts
+app.use("/api/v1/users", userRouter); // API Route for Users
 
 // Handling the unhandled routes
 app.all("*", (req, res, next) => {
@@ -143,7 +145,6 @@ app.all("*", (req, res, next) => {
     new AppError(`URL ${req.originalUrl} does not exist on this server !!!`)
   );
 });
-//------------------------------------
 
 //Global Error Handling Middleware
 app.use(globalErrorHandler);

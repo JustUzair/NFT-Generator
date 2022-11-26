@@ -139,10 +139,3 @@ exports.getForgotPasswordForm = catchAsync(async (req, res, next) => {
     title: "Reset Password",
   });
 });
-
-exports.alerts = (req, res, next) => {
-  const { alert } = req.query;
-  if (alert === "booking")
-    res.locals.alert = `Your booking has been successful!, If your booking doesn't show up here immediately, please come back later.`;
-  next();
-};
