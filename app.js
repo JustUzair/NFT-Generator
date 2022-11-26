@@ -30,18 +30,18 @@ app.use(express.static(`${__dirname}/public`));
 
 //Set security HTTP headers
 
-/*----------------------------------------------------------------------------------------------------------------|
- Helmet is a JS module that helps in securing HTTP headers                                                        |  
- Helmet sets the the Cross-Origin-Embedder-Policy HTTP response header to 'require-corp'                          |
- <img src="https://example.com/image.png"> ====> won't work, until example.com explicitly allows it               |
-                                                                                                                  |
- crossOriginResourcePolicy:true ======> To allow other websites, and apps to request service from our server      |
-                                                                                                                  |
- contentSecurityPolicy is the name of a HTTP response header that modern browsers use to enhance                  |
- the security of the document (or web page). The Content-Security-Policy header allows you to restrict            |
- how resources such as JavaScript, CSS, or pretty much anything that the browser loads.                           |
-                                                                                                                  |
-------------------------------------------------------------------------------------------------------------------|
+/*---------------------------------------------------------------------------------------------------------------|
+ |  Helmet is a JS module that helps in securing HTTP headers                                                    |  
+ |  Helmet sets the the Cross-Origin-Embedder-Policy HTTP response header to 'require-corp'                      |
+ |  <img src="https://example.com/image.png"> ====> won't work, until example.com explicitly allows it           |
+ |                                                                                                               |
+ |  crossOriginResourcePolicy:true ======> To allow other websites, and apps to request service from our server  |
+ |                                                                                                               |
+ |  contentSecurityPolicy is the name of a HTTP response header that modern browsers use to enhance              |
+ |  the security of the document (or web page). The Content-Security-Policy header allows you to restrict        |
+ |  how resources such as JavaScript, CSS, or pretty much anything that the browser loads.                       |
+ |                                                                                                               |
+-|----- ---------------------------------------------------------------------------------------------------------|
 */
 app.use(
   helmet({
@@ -74,14 +74,13 @@ const limiter = rateLimit({
 
 app.use("/api", limiter); // all the routes that starts with  /api will have the rate limiting.
 
-//
-/*|----------------------------------------------------------------------------------------|
-  |             Body Parser, reads data from body into req.body                            |
-    The “extended” syntax allows for rich objects and arrays to be encoded                 |
-    into the URL-encoded format, allowing for a JSON-like experience                       |
-    urlencoded is used to parse headers where content-type                                 |
-    is set to 'application/x-www-form-urlencoded'                                          |
-  |----------------------------------------------------------------------------------------|
+/*|--------------------------------------------------------------------------------|
+  |             Body Parser, reads data from body into req.body                    |
+  |  The “extended” syntax allows for rich objects and arrays to be encoded        |
+  |  into the URL-encoded format, allowing for a JSON-like experience              |
+  |  urlencoded is used to parse headers where content-type                        |
+  |  is set to 'application/x-www-form-urlencoded'                                 |
+  |--------------------------------------------------------------------------------|
 */
 app.use(
   express.json({
@@ -92,8 +91,26 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 
+/*|-------------------------------------------------------------------------------------|
+  |   Cookie-parser middleware will parse the Cookie header on the request and expose   | 
+  |   the cookie data as the property req.cookies and, if a secret was provided,        |
+  |   as the property req.signedCookies. These properties are name value pairs of the   |
+  |   cookie name to cookie value.                                                      |
+  |-------------------------------------------------------------------------------------|
+*/
 app.use(cookieParser());
+
 // Data Sanitization against NoSQL query injection
+
+/*|--------------------------------------------------------------------------------------------------------|
+  |  Object keys starting with a $ or containing a . are reserved for use by MongoDB as operators.         |
+  |  Without this sanitization, malicious users could send an object containing a $ operator,              |
+  |  or including a ., which could change the context of a database operation                              |
+  |                                                                                                        |
+  |  This middleware sanitizes the received data, and remove any offending keys, or replace the characters |
+  |  with a 'safe' one.                                                                                    |
+  |--------------------------------------------------------------------------------------------------------|
+*/
 app.use(mongoSanitize());
 
 // Data Sanitization against XSS

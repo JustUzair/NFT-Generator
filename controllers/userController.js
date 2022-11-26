@@ -6,7 +6,6 @@ const catchAsync = require("../utils/catchAsync");
 const APIFeatures = require("../utils/apiFeatures");
 const AppError = require("../utils/appErrors");
 const factory = require("./handlerFactory");
-const cloudinary = require("cloudinary").v2;
 
 const multerStorage = multer.memoryStorage();
 
