@@ -29,9 +29,20 @@ app.options("*", cors());
 app.use(express.static(`${__dirname}/public`));
 
 //Set security HTTP headers
-// app.use(helmet());
-// app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
 
+/*----------------------------------------------------------------------------------------------------------------|
+ Helmet is a JS module that helps in securing HTTP headers                                                        |  
+ Helmet sets the the Cross-Origin-Embedder-Policy HTTP response header to 'require-corp'                          |
+ <img src="https://example.com/image.png"> ====> won't work, until example.com explicitly allows it               |
+                                                                                                                  |
+ crossOriginResourcePolicy:true ======> To allow other websites, and apps to request service from our server      |
+                                                                                                                  |
+ contentSecurityPolicy is the name of a HTTP response header that modern browsers use to enhance                  |
+ the security of the document (or web page). The Content-Security-Policy header allows you to restrict            |
+ how resources such as JavaScript, CSS, or pretty much anything that the browser loads.                           |
+                                                                                                                  |
+------------------------------------------------------------------------------------------------------------------|
+*/
 app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
@@ -40,15 +51,15 @@ app.use(
     },
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["*"],
-        "img-src": ["* data: 'unsafe-eval' 'unsafe-inline' blob:"],
-        scriptSrc: ["* data: 'unsafe-eval' 'unsafe-inline' blob:"],
+        defaultSrc: ["*"], // default policy for fetching resources such as JavaScript, Images, CSS, Fonts etc
+        "img-src": ["* data: 'unsafe-eval' 'unsafe-inline' blob:"], //defines valid source of images
+        scriptSrc: ["* data: 'unsafe-eval' 'unsafe-inline' blob:"], // defines valid source of scripts
       },
     },
   })
 );
 
-//Development Logging
+//Development Logging - logs the requests made to the server
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 
 // Rate Limiting for an IP
