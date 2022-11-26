@@ -33,10 +33,6 @@ exports.resizeArt = catchAsync(async (req, res, next) => {
 
   //   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
   req.file.filename = req.file.originalname;
-  //   console.log(req.file.buffer.toString());
-  //   (await sharp(req.file.buffer)).toFile(
-  //     `public/img/arts/${req.user.id}/layers/${req.file.filename}`
-  //   );
   await writeFile(
     `public/img/arts/${req.user.id}/layers/${req.file.filename}`,
     req.file.buffer
