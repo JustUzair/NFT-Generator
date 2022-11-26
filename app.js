@@ -62,22 +62,36 @@ app.use(
 //Development Logging - logs the requests made to the server
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 
-// Rate Limiting for an IP
+/*|-------------------------------------------------------------------------|
+  |                 Rate Limiting for individual IPs                        |
+  |-------------------------------------------------------------------------|
+*/
 const limiter = rateLimit({
-  max: 100,
-  windowMS: 60 * 60 * 1000,
+  max: 100, // Maximum 100 requests per Hour
+  windowMS: 60 * 60 * 1000, // 1 Hour
   message: "Too many requests from this IP, please try again in an hour",
 });
+
 app.use("/api", limiter); // all the routes that starts with  /api will have the rate limiting.
 
-//Body Parser, reads data from body into req.body
+//
+/*|----------------------------------------------------------------------------------------|
+  |             Body Parser, reads data from body into req.body                            |
+    The “extended” syntax allows for rich objects and arrays to be encoded                 |
+    into the URL-encoded format, allowing for a JSON-like experience                       |
+    urlencoded is used to parse headers where content-type                                 |
+    is set to 'application/x-www-form-urlencoded'                                          |
+  |----------------------------------------------------------------------------------------|
+*/
 app.use(
   express.json({
-    limit: "10kb",
+    limit: "10kb", //req.body can contain only
   })
 );
+
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(express.urlencoded({ extended: false, limit: "10kb" }));
+
 app.use(cookieParser());
 // Data Sanitization against NoSQL query injection
 app.use(mongoSanitize());

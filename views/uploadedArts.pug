@@ -1,7 +1,28 @@
 extends base
 block content
-
+    .upload__container
         
+        form.form.form-upload-art
+            .form__group.form__photo-upload
+                img.form__user-photo(src=`/img/users/${user.photo}`, alt='User photo')
+                input.form__upload(type='file', hidden accept='.svg' ,id='art', name='art' style='margin-bottom:2.5rem;')
+                label(for='art') Select File
+            .form__group.right
+                button.btn.btn--small.btn--green.art__upload--btn('margin-bottom:0') Upload Art
+            span(style='text-align:center; font-size:1.2rem;') 
+                img(src='/img/info.svg' style='margin-right:10px;') 
+                |Upload 3 layers of each type to generate more arts with more unique combinations
+        if attributeCount.bg <=0 || attributeCount.beard <=0 || attributeCount.eyes <=0 || attributeCount.hair <=0 || attributeCount.head <=0 || attributeCount.mouth <=0 || attributeCount.nose <=0
+            h1(style='color:#ff4040;background: #ffffff0f; text-align:center; font-size:3rem; text-decoration:underline; font-style:italic; font-weight:200;') Upload the missing layers in order to generate arts
+        else
+            form.form.form-generate-art
+                .form__group.right(data-id=user._id)
+                    //- Uncomment this section and comment out the last button element to allow art generation once per artist 
+                        if generatedCount > 0
+                            h1(style='color:#ff4040;background: #ffffff0f; text-align:center; font-size:3rem; text-decoration:underline; font-style:italic; font-weight:200; width:fit-content;') You have already generated your NFTs once
+                        else 
+                            button.btn.btn--small.btn--green.art__generate--btn(style='border-radius:10px') Generate Arts
+                    button.btn.btn--small.btn--green.art__generate--btn(style='border-radius:10px') Generate Arts
     .artists
         .title
             p.titlebold(style='text-decoration:underline;') Background
@@ -9,7 +30,7 @@ block content
             if attributeCount.bg <=0 
                 h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Background layer uploaded by this user
             else 
-                -for(i=0;i<attributeCount.beard;i++){
+                -for(i=0;i<attributeCount.bg;i++){
                     .nft
                         .main(style='background:#fff')
                             img.tokenImage(src=`/img/arts/${user._id}/layers/bg${i}.svg` alt=`Background ${i} layer`)
@@ -82,4 +103,6 @@ block content
                             img.tokenImage(src=`/img/arts/${user._id}/layers/nose${i}.svg` alt=`Nose ${i} layer`)
                 -}
             
+    script(src='/js/uploadLayer.js' defer)
+    script(src='/js/generateNFT.js' defer)
 

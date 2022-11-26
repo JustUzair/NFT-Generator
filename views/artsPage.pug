@@ -8,8 +8,8 @@ block content
                 .nft
                     .main
                         img.tokenImage(src=`/img/arts/${art.artist}/out/${art.photo}` alt=`${art.artist}/${art.photo}`)
-                        h2(style='text-transform:capitalize')=art.name
-                        p.description=art.description
+                        h2(style='text-transform:capitalize;text-align:center')=art.name
+                        p.description(style='text-align:center')=art.description
                         .tokenInfo
                             .price
                                 img(src='/img/eth.svg' width=25)

@@ -25,7 +25,7 @@ const multerFilter = (req, file, cb) => {
     cb(new AppError("Not an SVG file!, Please upload svg images only!"), false);
 };
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-exports.uploadArt = upload.single("photo");
+exports.uploadArt = upload.single("art");
 
 //MAKE CHANGES TO UPLOAD FILE Upload File Middleware
 exports.resizeArt = catchAsync(async (req, res, next) => {
@@ -46,14 +46,14 @@ exports.generateArts = catchAsync(async (req, res, next) => {
   const user = req.user;
   //   console.log("User.id : ", user.id);
   //--------------------------Uncomment if you want to regenerate arts--------------------------
-  //   try {
-  //     await Art.deleteMany({ artist: user.id });
-  //     if (existsSync(`./public/img/arts/${user.id}/out/`))
-  //       rmdirSync(`./public/img/arts/${user.id}/out/`, {
-  //         recursive: true,
-  //         force: true,
-  //       });
-  //   } catch (err) {}
+  try {
+    await Art.deleteMany({ artist: user.id });
+    if (existsSync(`./public/img/arts/${user.id}/out/`))
+      rmdirSync(`./public/img/arts/${user.id}/out/`, {
+        recursive: true,
+        force: true,
+      });
+  } catch (err) {}
 
   //-----------------------------------------------------------------------------------------------
 
@@ -132,6 +132,7 @@ exports.generateArts = catchAsync(async (req, res, next) => {
       (attributeCount.beard - 1 != 0 ? attributeCount.beard - 1 : 1) *
       (attributeCount.head - 1 != 0 ? attributeCount.head - 1 : 1);
     if (possibleCombinations == 1) possibleCombinations = 0;
+    // console.log(`Combinations : ${possibleCombinations}`);
     let index = Math.min(possibleCombinations, 199);
     do {
       try {

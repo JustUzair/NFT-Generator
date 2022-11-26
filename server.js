@@ -16,13 +16,13 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-/*--------------------------------------------------------|
-  We pass the useNewUrlParser: true                       |
-    useCreateIndex: true                                  |
-    useFindAndModify: true                                |
-    useUnifiedTopology: true, etc                         |
-    to mongoose.connect() to avoid the DeprecationWarning.|
-----------------------------------------------------------|
+/*|--------------------------------------------------------|
+  |  We pass the useNewUrlParser: true                     |
+  |  useCreateIndex: true                                  |
+  |  useFindAndModify: true                                |
+  |  useUnifiedTopology: true, etc                         |
+  |  to mongoose.connect() to avoid the DeprecationWarning.|
+  |--------------------------------------------------------|
 */
 mongoose
   .connect(DB, {
@@ -38,9 +38,9 @@ mongoose
 const app = require("./app");
 const port = process.env.PORT || 3000;
 
-/*-------------------------------------------------------------------------|
-  Listen for requests on port number indicated by env variable PORT or 3000|
----------------------------------------------------------------------------|
+/*|-------------------------------------------------------------------------|
+  |Listen for requests on port number indicated by env variable PORT or 3000|
+  |-------------------------------------------------------------------------|
 */
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}`);

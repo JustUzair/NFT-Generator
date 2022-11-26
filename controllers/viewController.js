@@ -34,13 +34,20 @@ exports.getGeneratedArts = catchAsync(async (req, res, next) => {
 });
 
 exports.getMyUploads = catchAsync(async (req, res, next) => {
-  const prom = new Promise((resolve, reject) => {
+  const generatedFilesProm = new Promise((resolve, reject) => {
+    return readdir(`./public/img/arts/${req.user.id}/out`, (err, filenames) =>
+      err != null ? reject(err) : resolve(filenames)
+    );
+  });
+  const generatedFiles = await generatedFilesProm;
+  //   console.log(`Generated Arts : ${generatedFiles.length}`);
+  const uploadedFilesProm = new Promise((resolve, reject) => {
     return readdir(
       `./public/img/arts/${req.user.id}/layers`,
       (err, filenames) => (err != null ? reject(err) : resolve(filenames))
     );
   });
-  const files = await prom;
+  const uploadedFiles = await uploadedFilesProm;
   const attributeCount = {
     beard: 0,
     bg: 0,
@@ -50,7 +57,7 @@ exports.getMyUploads = catchAsync(async (req, res, next) => {
     mouth: 0,
     nose: 0,
   };
-  files.map(file => {
+  uploadedFiles.map(file => {
     if (file.startsWith("beard")) {
       attributeCount.beard = attributeCount.beard + 1;
     } else if (file.startsWith("bg")) {
@@ -71,6 +78,7 @@ exports.getMyUploads = catchAsync(async (req, res, next) => {
   res.status(200).render("uploadedArts", {
     title: "My Uploads",
     attributeCount,
+    generatedCount: generatedFiles.length,
   });
 });
 exports.getLoginForm = (req, res) => {
