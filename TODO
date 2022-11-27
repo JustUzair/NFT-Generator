@@ -1,4 +1,4 @@
-pending,  view, auth, nftgen controllers
+pending,  view, auth controllers
 Document all pre-save, pre-find etc, middleware in Models
 Document the NFT generation logic
 Document utils such as apiFeatures, appErrors, catchAsync, email

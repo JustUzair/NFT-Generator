@@ -6,26 +6,47 @@ const { promisify } = require("util");
 const Email = require("./../utils/email");
 const crypto = require("crypto");
 const { crossOriginOpenerPolicy } = require("helmet");
+
 const signToken = id => {
+  /*
+  |-------------------------------------------------------------------------|
+  | Sign the JWT with your private signature, that indicates the validity   | 
+  | and authenticity of the token                                           |    
+  |-------------------------------------------------------------------------|
+*/
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 const createAndSendToken = (user, statusCode, req, res) => {
+  /*
+  |-------------------------------------------------------------------------|
+  | Get the signed token and return is as cookie in the http response header|
+  |-------------------------------------------------------------------------|
+*/
   const token = signToken(user._id);
+  /*
+  |--------------------------------------------------------------------------------------------------|
+  |   The req.secure property is an Boolean property that is true if a TLS connection is established |
+  |   else return false.                                                                             |
+  |                                                                                                  |
+  |   To get information about which protocol used between client and load balancer,                 |
+  |   we can use the X-Forwarded-Proto request header.                                               |
+  |   Using this header, the client can make an HTTP request to an HTTPS-only resource.              |
+  |--------------------------------------------------------------------------------------------------|
+*/
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 //cookie will expire after this time
     ),
-    httpOnly: true,
-    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+    httpOnly: true, // Allow cookies to be only used by web-browsers
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https", // allow cookies to only be used with https
   };
 
-  res.cookie("jwt", token, cookieOptions);
-
+  res.cookie("jwt", token, cookieOptions); // Set cookie with name "jwt" = token, with cookie options
   // Remove password from output
   user.password = undefined;
-
+  //Send data of user alongside the signed JWT token
   res.status(statusCode).json({
     status: "success",
     token,
@@ -37,13 +58,13 @@ const createAndSendToken = (user, statusCode, req, res) => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
-  let url = `${req.protocol}://127.0.0.1:3000/me`;
+  let url = `${req.protocol}://127.0.0.1:3000/me`; // Localhost
   if (process.env.NODE_ENV === "production") {
-    url = `${req.protocol}://${req.get("host")}/me`;
+    url = `${req.protocol}://${req.get("host")}/me`; // Get Host, of the live website
   }
   // console.log(url);
-  await new Email(newUser, url).sendWelcome();
-  createAndSendToken(newUser, 201, req, res);
+  await new Email(newUser, url).sendWelcome(); //Send a welcome email to the 'url'
+  createAndSendToken(newUser, 201, req, res); // Sign JWT and send it as response
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -80,6 +101,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   } else if (req.cookies.jwt && req.cookies.jwt !== "Logged Out Successfully") {
     token = req.cookies.jwt;
   }
+
   if (req.cookies.jwt === "Logged Out Successfully") return res.redirect("/");
   if (!token) {
     return next(
@@ -105,7 +127,7 @@ exports.protect = catchAsync(async (req, res, next) => {
       new AppError("User recently changed the password, please log in again")
     );
   // grant access to the protected route
-  req.user = currentUser;
+  req.user = currentUser; // Add currently logged in user to req object
   res.locals.user = currentUser;
   next();
 });
@@ -113,6 +135,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 //Only for rendered pages, to check if user is logged in or not
 
 exports.isLoggedIn = async (req, res, next) => {
+  console.log(req);
   if (req.cookies.jwt) {
     try {
       // 1) verify token
