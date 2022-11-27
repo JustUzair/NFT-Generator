@@ -56,25 +56,35 @@ function getRandomName() {
   const name = `${randAdj}-${randName}`;
 
   if (takenNames[name] || !name) {
-    return getRandomName();
+    return getRandomName(); //if name is taken get a new name
   } else {
-    takenNames[name] = name;
-    console.log();
+    takenNames[name] = name; //accept the name
     return name;
   }
 }
 
 async function getLayer(user, name, skip = 0.0) {
-  //   console.log("USER GET LAYER ");
-  //   const svg = readFileSync(`./public/img/temp/layers/${name}.svg`, "utf-8");
   const svg = await readFile(
     `./public/img/arts/${user}/layers/${name}.svg`,
     "utf-8"
   );
+  /*
+        |--------------------------------------------------------|
+        |                get 'layer' within svg tag              |   
+        |        Following layers are to be fetched from svg tag |                
+        |                    <!-- bg -->                         |   
+        |                    <!-- head -->                       |     
+        |                    <!-- hair -->                       |       
+        |                    <!-- eyes -->                       |   
+        |                    <!-- nose -->                       |  
+        |                    <!-- mouth -->                      |   
+        |                    <!-- beard -->                      |   
+        |--------------------------------------------------------|
+      */
 
   const re = /(?<=\<svg\s*[^>]*>)([\s\S]*?)(?=\<\/svg\>)/g;
   const layer = svg.match(re)[0];
-  return Math.random() > skip ? layer : "";
+  return Math.random() > skip ? layer : ""; //return the layer
 }
 
 async function svgToPng(name, user) {
@@ -107,7 +117,6 @@ async function createImage(index, user, attribute) {
     const mouth = randInt(attribute.mouth - 1);
     const beard = randInt(attribute.beard - 1);
     const faceCut = randInt(attribute.head - 1);
-
     /*
   |-------------------------------------------------------------------------|
   |                 2) Generate Combination key                             |
@@ -124,40 +133,22 @@ async function createImage(index, user, attribute) {
       |     and check again (recusrively)                                                             |
       |                                 WORKING                                                       |
       |     When a new face is generated we add it to the current combination                         |
-      |      |____ face[takenFaces] = face (face variable from step 2)                                |
+      |      |____ takenFaces[face] = face (face variable from step 2)                                |
       |      |____ In next iteration, again check if current combination is equal to previous one     |
       |              if, so generate a new one                                                        |
       |                                                                                               |
       |                                  EXAMPLE                                                      |
-      |          On generation check new combination with taken combination,                          |
+      |          On generation check new combination with existing ones in the object,                |
       |          if not, use it and mark new one as taken, take a look below                          |
-      |                                                                                               |
-      |                      New face combination 655321                                              |   
-      |                      Taken Combination 655321   <--- Previous Combination                     |
-      |                     -----------------------------                                             |  
-      |                      New face combination 422511 <--- Current Combination                     |          
-      |                      Taken Combination 422511                                                 |          
-      |                     -----------------------------                                             |  
-      |                      New face combination 182514                                              |  
-      |                      Taken Combination 182514                                                 | 
-      |                     -----------------------------                                             |
-      |                      New face combination 613004                                              |              
-      |                      Taken Combination 613004                                                 |
-      |                     -----------------------------                                             |
-      |                      New face combination 542203                                              |
-      |                      Taken Combination 542203                                                 |
-      |                     -----------------------------                                             |
-      |                      New face combination 592511                                              |
-      |                      Taken Combination 592511                                                 |
       |-----------------------------------------------------------------------------------------------|
 */
-    if (face[takenFaces]) {
-      createImage();
+    if (takenFaces[face]) {
+      createImage(index, user, attribute);
     } else {
       const name = getRandomName();
       const description = `A drawing of ${name.split("-").join(" ")}`;
       //   console.log(name);
-      face[takenFaces] = face; // <---- Accept new combination
+      takenFaces[face] = face; // <---- Accept new combination, and add it to object of taken faces
 
       const final = template
         // pass the random generated integers into the template string to select a layer
@@ -223,7 +214,6 @@ async function generateNFT(index, id, attributeCount) {
     }
   } while (index >= 0);
   //   console.log(JSON.stringify(takenNames)); // prints the taken names, type = object
-  console.log(JSON.stringify(takenFaces));
 }
 
 // module.exports = createImage;
