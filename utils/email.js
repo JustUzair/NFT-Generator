@@ -4,8 +4,10 @@ const htmlToText = require("html-to-text");
 
 module.exports = class Email {
   constructor(user, url) {
-    (this.to = user.email), (this.firstName = user.name.split(" ")[0]);
-    (this.url = url), (this.from = `Uzair Saiyed <${process.env.EMAIL_FROM}>`);
+    this.to = user.email;
+    this.firstName = user.name.split(" ")[0];
+    this.url = url;
+    this.from = `Uzair Saiyed <${process.env.EMAIL_FROM}>`;
   }
   newTransport() {
     if (process.env.NODE_ENV === "production") {

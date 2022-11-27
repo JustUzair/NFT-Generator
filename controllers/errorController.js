@@ -140,6 +140,11 @@ const handleJWTError = () =>
 const handleJWTExpired = () =>
   new AppError("Your token has expired! Please log in again", 401);
 
+/*
+  |-------------------------------------------------------------------------|
+  |                  GlOBAL ERROR HANDLING MIDDLEWARE                       |
+  |-------------------------------------------------------------------------|
+*/
 module.exports = (err, req, res, next) => {
   // console.log(err.stack);
   err.statusCode = err.statusCode || 500;
