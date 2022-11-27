@@ -278,7 +278,8 @@
   .artists .title {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
     margin-bottom: 50px;
   }
  .artists .title .titlebold {
@@ -290,6 +291,13 @@
     font-size: 48px;
     line-height: 72px;
   }
+  .artists .upload--info{
+    max-width:40vw;
+    font-size:1.3rem; 
+    text-decoration:none;
+    text-align: left;
+  }
+
   .artists .artists--container{
     display: flex;
     justify-content: space-between;

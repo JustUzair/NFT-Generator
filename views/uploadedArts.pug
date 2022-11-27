@@ -26,6 +26,9 @@ block content
     .artists
         .title
             p.titlebold(style='text-decoration:underline;') Background
+            span.upload--info
+                img(src='/img/info.svg' style='margin-right:10px;') 
+                |While uploading file name for this layer should start as bg0, bg1, bg2...
         .artists--container
             if attributeCount.bg <=0 
                 h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Background layer uploaded by this user
@@ -37,6 +40,9 @@ block content
                 -}
         .title
             p.titlebold(style='text-decoration:underline;') Beard
+            span.upload--info
+                img(src='/img/info.svg' style='margin-right:10px;') 
+                |While uploading file name for this layer should start as beard0, beard1, beard2...
         .artists--container
             if attributeCount.beard <=0 
                 h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Beard layer uploaded by this user
@@ -49,6 +55,9 @@ block content
         
         .title
             p.titlebold(style='text-decoration:underline;') Eyes
+            span.upload--info
+                img(src='/img/info.svg' style='margin-right:10px;') 
+                |While uploading file name for this layer should start as eyes0, eyes1, eyes2...
         .artists--container
             if attributeCount.eyes <=0 
                     h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Eyes layer uploaded by this user
@@ -60,6 +69,9 @@ block content
                 -}
         .title
             p.titlebold(style='text-decoration:underline;') Hair
+            span.upload--info
+                img(src='/img/info.svg' style='margin-right:10px;') 
+                |While uploading file name for this layer should start as hair0, hair1, hair2...
         .artists--container
             if attributeCount.hair <=0 
                     h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Hair layer uploaded by this user
@@ -70,7 +82,10 @@ block content
                             img.tokenImage(src=`/img/arts/${user._id}/layers/hair${i}.svg` alt=`Hair ${i} layer`)
                 -}
         .title
-            p.titlebold(style='text-decoration:underline;') Head
+            p.titlebold(style='text-decoration:underline;') Head / (Face Cut)
+            span.upload--info
+                img(src='/img/info.svg' style='margin-right:10px;') 
+                |While uploading file name for this layer should start as head0, head1, head2...
         .artists--container
             if attributeCount.head <=0 
                     h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Head layer uploaded by this user
@@ -82,6 +97,9 @@ block content
                 -}
         .title
             p.titlebold(style='text-decoration:underline;') Mouth
+            span.upload--info
+                img(src='/img/info.svg' style='margin-right:10px;') 
+                |While uploading file name for this layer should start as mouth0, mouth1, mouth2...
         .artists--container
             if attributeCount.mouth <=0 
                     h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Mouth layer uploaded by this user
@@ -93,6 +111,9 @@ block content
                 -}
         .title
             p.titlebold(style='text-decoration:underline;') Nose
+            span.upload--info
+                img(src='/img/info.svg' style='margin-right:10px;') 
+                |While uploading file name for this layer should start as nose0, nose1, nose2...
         .artists--container
             if attributeCount.nose <=0 
                     h1.error__msg(style='margin-bottom:0; padding:0 1rem') No Nose layer uploaded by this user
