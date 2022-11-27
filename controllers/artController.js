@@ -3,21 +3,17 @@ const catchAsync = require("../utils/catchAsync");
 const sharp = require("sharp");
 const createImage = require("./nftGen");
 const { promisify } = require("util");
-const multerStorage = multer.memoryStorage();
-const {
-  existsSync,
-  mkdirSync,
-  rmSync,
-  rmdirSync,
-  readdir,
-  rm,
-  //   writeFileSync,
-} = require("fs");
+const { existsSync, mkdirSync, rmSync, rmdirSync, readdir, rm } = require("fs");
 const Art = require("../models/artModel");
 const AppError = require("../utils/appErrors");
 const { mkdir, rmdir, writeFile } = require("fs").promises;
 
-//only allow images to be uploaded
+const multerStorage = multer.memoryStorage(); // Store uploaded files in RAM
+/*
+  |-------------------------------------------------------------------------|
+  |                 Only allow SVG images to be uploaded                    |
+  |-------------------------------------------------------------------------|
+*/
 const multerFilter = (req, file, cb) => {
   console.log("File Type : " + file.mimetype);
   if (file.mimetype === "image/svg+xml") cb(null, true);
@@ -25,17 +21,23 @@ const multerFilter = (req, file, cb) => {
     cb(new AppError("Not an SVG file!, Please upload svg images only!"), false);
 };
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-exports.uploadArt = upload.single("art");
+exports.uploadArt = upload.single("art"); // upload single image, passed in the req.body, with name "art"
 
-//MAKE CHANGES TO UPLOAD FILE Upload File Middleware
+/*
+  |-------------------------------------------------------------------------|
+  |                NOTE: Resizing an SVG causes errors                      |
+  |         MAKE CHANGES TO UPLOADED FILE if any ex:resize, scale to        |
+  |         specific dimensions                                             |
+  |         Lastly store image at given location                            |
+  |-------------------------------------------------------------------------|
+*/
 exports.resizeArt = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
-  //   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
   req.file.filename = req.file.originalname;
   await writeFile(
     `public/img/arts/${req.user.id}/layers/${req.file.filename}`,
-    req.file.buffer
+    req.file.buffer //Uploaded image in the memory
   );
   res.status(200).json({
     status: "success",
@@ -57,30 +59,31 @@ exports.generateArts = catchAsync(async (req, res, next) => {
 
   //-----------------------------------------------------------------------------------------------
 
+  //--------------------------Check if art is already generated------------------------------------
   try {
-    let outProm = new Promise((resolve, reject) => {
+    let outFileProm = new Promise((resolve, reject) => {
       return readdir(`./public/img/arts/${user.id}/out`, (err, filenames) =>
         err != null ? reject(err) : resolve(filenames)
       );
     });
-    const out = await outProm;
+    const out = await outFileProm;
     if (out.length > 0)
-      return next(new AppError("Your arts have already been generated"));
+      return next(new AppError("Your arts have already been generated")); // Don't allow regeneration of arts
   } catch (err) {}
+  //-----------------------------------------------------------------------------------------------
 
-  // rm(`./public/img/arts/${user.id}/out/`, {
-  //   recursive: true,
-  // });
+  // If 'out folder' doesn't exist for a given artist ID, make an 'out' folder
   if (!existsSync(`./public/img/arts/${user.id}/out/`)) {
     mkdirSync(`./public/img/arts/${user.id}/out/`);
   }
 
-  const prom = new Promise((resolve, reject) => {
+  // If 'out folder' doesn't exist for a given artist ID, make an 'out' folder
+  const readLayersProm = new Promise((resolve, reject) => {
     return readdir(`./public/img/arts/${user.id}/layers`, (err, filenames) =>
       err != null ? reject(err) : resolve(filenames)
     );
   });
-  const files = await prom;
+  const files = await readLayersProm;
   const attributeCount = {
     beard: 0,
     bg: 0,
@@ -91,6 +94,7 @@ exports.generateArts = catchAsync(async (req, res, next) => {
     nose: 0,
   };
   files.map(file => {
+    //Count the attributes (i.e. no of files for each attribute)
     if (file.startsWith("beard")) {
       attributeCount.beard = attributeCount.beard + 1;
     } else if (file.startsWith("bg")) {
@@ -108,6 +112,7 @@ exports.generateArts = catchAsync(async (req, res, next) => {
     }
   });
   console.log("Attribute Count : " + JSON.stringify(attributeCount));
+  //No Files are found, return error message
   if (
     attributeCount.bg == 0 ||
     attributeCount.hair == 0 ||
@@ -123,6 +128,7 @@ exports.generateArts = catchAsync(async (req, res, next) => {
         "You don't have any / insufficient layers uploaded, please upload layers to generate NFTs",
     });
   } else {
+    // Layer Files are found, calculate possible combinations from the files
     let possibleCombinations =
       (attributeCount.bg - 1 != 0 ? attributeCount.bg - 1 : 1) *
       (attributeCount.hair - 1 != 0 ? attributeCount.hair - 1 : 1) *
@@ -131,18 +137,24 @@ exports.generateArts = catchAsync(async (req, res, next) => {
       (attributeCount.mouth - 1 != 0 ? attributeCount.mouth - 1 : 1) *
       (attributeCount.beard - 1 != 0 ? attributeCount.beard - 1 : 1) *
       (attributeCount.head - 1 != 0 ? attributeCount.head - 1 : 1);
-    if (possibleCombinations == 1) possibleCombinations = 0;
+
+    // Exactly 1 Layer File, for each attribute, generate single art
+    if (possibleCombinations == 1) possibleCombinations = 0; // value is set because, art is generated in do-while loop
     // console.log(`Combinations : ${possibleCombinations}`);
+
+    // An artist can only generate 200 NFTs
     let index = Math.min(possibleCombinations, 199);
     do {
       try {
-        await createImage(index, user.id, attributeCount);
+        await createImage(index, user.id, attributeCount); // Create NFT and Store details in the DB
         index--;
       } catch (err) {
         console.log(err.message);
         break;
       }
     } while (index >= 0);
+
+    // NFTs generation successful, send acknowledgement
     res.status(200).json({
       status: "success",
       message: "Your NFTs have been generated!",
