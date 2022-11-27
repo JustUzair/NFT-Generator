@@ -46,10 +46,10 @@ const server = app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
 
-/*  |---------------------------------------------------------------------------------------|
-    |   The 'unhandledRejection' event is useful for detecting and keeping track of promises|
-    |   that were rejected whose rejections have not yet been handled.                      |
-    |---------------------------------------------------------------------------------------|
+/*|---------------------------------------------------------------------------------------|
+  |   The 'unhandledRejection' event is useful for detecting and keeping track of promises|
+  |   that were rejected whose rejections have not yet been handled.                      |
+  |---------------------------------------------------------------------------------------|
 */
 process.on("unhandledRejection", err => {
   console.log(err.name, err.message);

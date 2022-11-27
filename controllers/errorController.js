@@ -1,23 +1,65 @@
 const AppError = require("../utils/appErrors");
-
+/*
+  |-------------------------------------------------------------------------|
+  |                     Handle Type Casting Errors                          |
+  |    for ex: we have a route => GET /art/:artID                           |
+  |    we call it like => GET /art/www                                      |
+  |    www is not a valid ObjectID in mongoDB hence throws validation error | 
+  |-------------------------------------------------------------------------|
+*/
 const handleCastErrorDB = err => {
   const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, 400);
 };
+/*
+  |-------------------------------------------------------------------------|
+  |                     Handle Duplicate Fields Errors                      |
+  |   Error Structure:                                                      |
+  |      {                                                                  |
+  |          "code": 11000,                                                 |
+  |          "index": 0,                                                    |
+  |          "errmsg": "E11000 duplicate key error collection...",          |
+  |              "op": {                                                    |
+  |                  "name": "Tuesday",                                     |
+  |                  "_id": "57fd89638039872dccb2230b",                     |
+  |                  "createdAt": "2016-10-12T00:52:51.702Z",               |
+  |                  "__v": 0                                               |
+  |              }                                                          |
+  |      }                                                                  |  
+  |-------------------------------------------------------------------------|
+*/
 const handleDuplicateFieldsDB = err => {
+  // Regex to Get text between quotes =>   /(["'])(\\?.)*?\1/
+  // Above regex returns array, where first element is the name of the duplicate field
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
   const message = `Duplicate Field Value : ${value}, Please use another value.`;
   return new AppError(message, 400);
 };
-
+/*
+  |-------------------------------------------------------------------------|
+  |                     Handle Mongoose Validation Error                    |
+  |    for ex: in our case password must contain both upper and lowe case   |
+  |    letters, thus when we try to add anything that doesn't match required|
+  |    format, this type of error is thrown                                 |
+  |-------------------------------------------------------------------------|
+*/
 const handleValidationErrorDB = err => {
   const errors = Object.values(err.errors).map(el => el.message);
   const message = `Invalid input data. ${errors.join(" ")}`;
   return new AppError(message, 400);
 };
-
+/*
+  |-------------------------------------------------------------------------|
+  |                     Handle Errors in Development mode                   |
+  |                 Show maximum possible details to the dev                |
+  |-------------------------------------------------------------------------|
+*/
 const sendDevError = (err, req, res) => {
-  // Errors generated within Api
+  /*
+  |-------------------------------------------------------------------------|
+  |                          API ERROR HANDLER                              |
+  |-------------------------------------------------------------------------|
+*/
   if (req.originalUrl.startsWith("/api")) {
     return res.status(err.statusCode).json({
       status: err.status,
@@ -26,7 +68,11 @@ const sendDevError = (err, req, res) => {
       stack: err.stack,
     });
   }
-  //Rendered Website
+  /*
+  |-------------------------------------------------------------------------|
+  |        RENDERED WEBSITE ERROR HANDLE AND RENDER Development Mode        |
+  |-------------------------------------------------------------------------|
+*/
   res.status(err.statusCode).render("error", {
     title: "Something went wrong",
     statusCode: err.statusCode,
@@ -34,10 +80,20 @@ const sendDevError = (err, req, res) => {
   });
 };
 
-// ------API ERROR HANDLER
+/*
+  |-------------------------------------------------------------------------|
+  |                     Handle Errors in Production mode                    |
+  |                 Show minimum possible details to the user               |
+  |-------------------------------------------------------------------------|
+*/
 const sendProductionError = (err, req, res) => {
+  /*
+  |-------------------------------------------------------------------------|
+  |                          API ERROR HANDLER                              |
+  |-------------------------------------------------------------------------|
+*/
   if (req.originalUrl.startsWith("/api")) {
-    // Operational, trusted error: send message to client
+    //1) Operational, trusted error: send message to client (ex : duplicate values in MongoDB)
     if (err.isOperational) {
       return res.status(err.statusCode).json({
         status: err.status,
@@ -54,18 +110,23 @@ const sendProductionError = (err, req, res) => {
       message: "Something went very wrong!",
     });
   }
-  //------RENDERED WEBSITE ERROR HANDLE AND RENDER
+
+  /*
+  |-------------------------------------------------------------------------|
+  |                  RENDERED WEBSITE ERROR HANDLE AND RENDER               |
+  |-------------------------------------------------------------------------|
+*/
   if (err.isOperational) {
+    //Operational Error, in rendered page
     return res.status(err.statusCode).render("error", {
       title: "Something went wrong",
       statusCode: err.statusCode,
       msg: err.message,
     });
-
-    // Programming or other unknown error: don't leak error details
   }
+  // Programming or other unknown error: don't leak error details
 
-  // 2) Send generic message : rendering error.pug
+  // Send generic message : rendering error.pug
   return res.status(err.statusCode).render("error", {
     title: "Something went wrong",
     statusCode: err.statusCode,

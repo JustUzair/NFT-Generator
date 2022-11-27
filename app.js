@@ -41,7 +41,7 @@ app.use(express.static(`${__dirname}/public`));
  |  the security of the document (or web page). The Content-Security-Policy header allows you to restrict        |
  |  how resources such as JavaScript, CSS, or pretty much anything that the browser loads.                       |
  |                                                                                                               |
--|----- ---------------------------------------------------------------------------------------------------------|
+-|---------------------------------------------------------------------------------------------------------------|
 */
 app.use(
   helmet({

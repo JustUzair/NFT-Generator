@@ -4,7 +4,7 @@ const artController = require("../controllers/artController");
 const authController = require("../controllers/authController");
 
 /*|------------------------------------------------------------------------------|
-  |     Important MiddleWare Function in this route and their uses                         |
+  |     Important MiddleWare Function in this route and their uses               |
   |                                                                              |
   |     authController.protect => Check if user is logged in before allowing     |
   |     access to private routes                                                 |
