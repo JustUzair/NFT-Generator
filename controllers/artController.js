@@ -1,7 +1,9 @@
 const multer = require("multer");
 const catchAsync = require("../utils/catchAsync");
 const sharp = require("sharp");
-const createImage = require("./nftGen");
+// const createImage = require("./nftGen");
+const generateNFTs = require("./nftGen");
+
 const { promisify } = require("util");
 const { existsSync, mkdirSync, rmSync, rmdirSync, readdir, rm } = require("fs");
 const Art = require("../models/artModel");
@@ -25,7 +27,7 @@ exports.uploadArt = upload.single("art"); // upload single image, passed in the 
 
 /*
   |-------------------------------------------------------------------------|
-  |                NOTE: Resizing an SVG causes errors                      |
+  |                NOTE: Resizing an SVG causes errors in our case          |
   |         MAKE CHANGES TO UPLOADED FILE if any ex:resize, scale to        |
   |         specific dimensions                                             |
   |         Lastly store image at given location                            |
@@ -144,16 +146,8 @@ exports.generateArts = catchAsync(async (req, res, next) => {
 
     // An artist can only generate 200 NFTs
     let index = Math.min(possibleCombinations, 199);
-    do {
-      try {
-        await createImage(index, user.id, attributeCount); // Create NFT and Store details in the DB
-        index--;
-      } catch (err) {
-        console.log(err.message);
-        break;
-      }
-    } while (index >= 0);
 
+    await generateNFTs(index, user.id, attributeCount);
     // NFTs generation successful, send acknowledgement
     res.status(200).json({
       status: "success",

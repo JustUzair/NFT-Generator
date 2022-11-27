@@ -21,10 +21,22 @@ const takenNames = {};
 const takenFaces = {};
 let index = 100;
 
+/*
+  |-------------------------------------------------|
+  |                max + 1 is non-inclusive         |
+  |                floor(5.95) = 5                  |
+  |-------------------------------------------------|
+*/
 function randInt(max) {
   return Math.floor(Math.random() * (max + 1));
 }
-
+/*
+  |-------------------------------------------------|
+  |                arr.length =10                   |
+  |                floor(5.95) = 5                  |
+  |               return 5th element from array     |
+  |-------------------------------------------------|
+*/
 function randElement(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -47,6 +59,7 @@ function getRandomName() {
     return getRandomName();
   } else {
     takenNames[name] = name;
+    console.log();
     return name;
   }
 }
@@ -65,15 +78,27 @@ async function getLayer(user, name, skip = 0.0) {
 }
 
 async function svgToPng(name, user) {
-  const src = `./public/img/arts/${user}/out/${name}.svg`;
-  const dest = `./public/img/arts/${user}/out/${name}.png`;
+  const src = `./public/img/arts/${user}/out/${name}.svg`; // Src file = newly generated svg
+  const dest = `./public/img/arts/${user}/out/${name}.png`; // Destination file = png format
 
-  const img = await sharp(src);
-  const resized = await img.resize(1024);
-  await resized.toFile(dest);
+  const img = await sharp(src); // read the svg file into sharp
+  const resized = await img.resize(1024); // resize the image using sharp
+  await resized.toFile(dest); // write the resized image to destination file, png format
 }
 
 async function createImage(index, user, attribute) {
+  /*
+      |---------------------------------------------------|
+      |             1) Generate Combinations              |
+      |         const bg = randInt(5); ---> o/p: 0        |
+      |         const hair = randInt(7); ---> o/p: 1      |
+      |         const eyes = randInt(9); ---> o/p: 5      |
+      |         const nose = randInt(5); ---> o/p: 6      |
+      |         const mouth = randInt(5); ---> o/p: 7     |
+      |         const beard = randInt(3); ---> o/p: 8     |
+      |         const faceCut = randInt(4); ---> o/p: 9   |
+    --|---------------------------------------------------|
+    */
   try {
     const bg = randInt(attribute.bg - 1);
     const hair = randInt(attribute.hair - 1);
@@ -82,19 +107,60 @@ async function createImage(index, user, attribute) {
     const mouth = randInt(attribute.mouth - 1);
     const beard = randInt(attribute.beard - 1);
     const faceCut = randInt(attribute.head - 1);
-    // 18,900 combinations
 
+    /*
+  |-------------------------------------------------------------------------|
+  |                 2) Generate Combination key                             |
+  |         From 1st block we join the random number for all the attributes |
+  |         We get, face = 0156789                                          |
+  |-------------------------------------------------------------------------|
+*/
     const face = [hair, eyes, mouth, nose, beard, faceCut].join("");
 
+    /*
+      |-----------------------------------------------------------------------------------------------|
+      |                             3) Generate Combination key                                       |
+      |     Check if a face combination already exists, if so, generate a new one                     |
+      |     and check again (recusrively)                                                             |
+      |                                 WORKING                                                       |
+      |     When a new face is generated we add it to the current combination                         |
+      |      |____ face[takenFaces] = face (face variable from step 2)                                |
+      |      |____ In next iteration, again check if current combination is equal to previous one     |
+      |              if, so generate a new one                                                        |
+      |                                                                                               |
+      |                                  EXAMPLE                                                      |
+      |          On generation check new combination with taken combination,                          |
+      |          if not, use it and mark new one as taken, take a look below                          |
+      |                                                                                               |
+      |                      New face combination 655321                                              |   
+      |                      Taken Combination 655321   <--- Previous Combination                     |
+      |                     -----------------------------                                             |  
+      |                      New face combination 422511 <--- Current Combination                     |          
+      |                      Taken Combination 422511                                                 |          
+      |                     -----------------------------                                             |  
+      |                      New face combination 182514                                              |  
+      |                      Taken Combination 182514                                                 | 
+      |                     -----------------------------                                             |
+      |                      New face combination 613004                                              |              
+      |                      Taken Combination 613004                                                 |
+      |                     -----------------------------                                             |
+      |                      New face combination 542203                                              |
+      |                      Taken Combination 542203                                                 |
+      |                     -----------------------------                                             |
+      |                      New face combination 592511                                              |
+      |                      Taken Combination 592511                                                 |
+      |-----------------------------------------------------------------------------------------------|
+*/
     if (face[takenFaces]) {
       createImage();
     } else {
       const name = getRandomName();
       const description = `A drawing of ${name.split("-").join(" ")}`;
       //   console.log(name);
-      face[takenFaces] = face;
+      face[takenFaces] = face; // <---- Accept new combination
 
       const final = template
+        // pass the random generated integers into the template string to select a layer
         .replace("<!-- bg -->", await getLayer(user, `bg${bg}`))
         .replace("<!-- head -->", await getLayer(user, `head${faceCut}`))
         .replace("<!-- hair -->", await getLayer(user, `hair${hair}`))
@@ -102,7 +168,7 @@ async function createImage(index, user, attribute) {
         .replace("<!-- nose -->", await getLayer(user, `nose${nose}`))
         .replace("<!-- mouth -->", await getLayer(user, `mouth${mouth}`))
         .replace("<!-- beard -->", await getLayer(user, `beard${beard}`, 0.5));
-
+      // Create a json object to write to JSON file
       const meta = {
         name,
         description,
@@ -114,21 +180,26 @@ async function createImage(index, user, attribute) {
           },
         ],
       };
+
       try {
         await writeFile(
+          // Write JSON data to json file
           `./public/img/arts/${user}/out/${index}.json`,
           JSON.stringify(meta)
         );
+
+        // Write the generated SVG file to its own SVG file
 
         await writeFile(`./public/img/arts/${user}/out/${index}.svg`, final);
       } catch (err) {
         console.log(err.message);
       }
 
-      await svgToPng(index, user);
-      const basePrice = 0.05;
+      await svgToPng(index, user); // Convert SVG image to PNG
+      const basePrice = 0.05; // static price for each art
 
       await Art.create({
+        // Persist the newly created art in the database
         artist: user,
         photo: `${index}.png`,
         price: basePrice,
@@ -141,4 +212,19 @@ async function createImage(index, user, attribute) {
   }
 }
 
-module.exports = createImage;
+async function generateNFT(index, id, attributeCount) {
+  do {
+    try {
+      await createImage(index, id, attributeCount);
+      index--;
+    } catch (err) {
+      console.log(err.message);
+      break;
+    }
+  } while (index >= 0);
+  //   console.log(JSON.stringify(takenNames)); // prints the taken names, type = object
+  console.log(JSON.stringify(takenFaces));
+}
+
+// module.exports = createImage;
+module.exports = generateNFT;
