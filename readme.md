@@ -1,7 +1,7 @@
 # NFT-Generator
 
-NFT generator website, that allow users to signup based on their role preferences
-There are 2 roles for which user can signup:
+NFT generator website, is a full stack, NodeJS application that allow users to sign-up based on their role preferences
+There are 2 roles for which user can sign-up:
 
 - User
 - Artist
@@ -17,7 +17,7 @@ And then there are admins that are head of the system, the website has both
 
 Conditional Rendering based on currently logged in user's role
 
-The logics / features that are implemented on top of [Fireship.io](https://www.youtube.com/watch?v=meTpMP0J5E8)'s exisitng one are:
+The logics / features that are implemented on top of [Fireship.io](https://www.youtube.com/watch?v=meTpMP0J5E8)'s existing one are:
 
 - Dynamically calculated the no. of layers that are uploaded by the artists, based on them generated the arts.
 
@@ -56,10 +56,14 @@ The logics / features that are implemented on top of [Fireship.io](https://www.y
   - Protection against NoSQL Injection
   - Prevention of parameter pollution
 
+## Acknowledgements
+
+- Inspiration [Fireship.io](https://www.youtube.com/watch?v=meTpMP0J5E8)
+
 ## Possible Prospective Features
 
 Before I started implementing this project, I talked to a few friends of mine at the college to check if this project can be implemented or not,
-but the more I got indulged with this project and explored, the more I realised how complex this project is.
+but the more I got indulged with this project and explored, the more I realized how complex this project is.
 The project that I wanted to implement may not be fully-implemented but it's almost around completion.
 Now, that I am this deep into it, I think that it might not be implemented 100% after all, due to some unforeseen circumstances, such as no existing references / examples
 that show how to use NodeJS with Blockchain, on a broader picture how to use Web3 alongside Web2.
@@ -80,9 +84,11 @@ Here are my observations that needs to be implemented to make this project compl
 
 - Add Wallet Connect as the main login feature.
 
-## Acknowledgements
+## Tech Stack
 
-- Inspiration [Fireship.io](https://www.youtube.com/watch?v=meTpMP0J5E8)
+**Client:** Pug Template Engine (SSR - Server Side Rendering)
+
+**Server:** Node.js, Express, MongoDB
 
 ## Screenshots
 
@@ -91,7 +97,7 @@ Here are my observations that needs to be implemented to make this project compl
 ![Home Page (After Login)](/Screenshots/3.JPG?raw=true "Home Page (After Login)")
 ![Login Page](/Screenshots/4.JPG?raw=true "Login Page")
 ![Login Auth](/Screenshots/5.JPG?raw=true "Login Auth")
-![Signup Page](/Screenshots/6.JPG?raw=true "Signup Page")
+![Sign-up Page](/Screenshots/6.JPG?raw=true "Sign-up Page")
 ![Forgot Password Page](/Screenshots/7.JPG?raw=true "Forgot Password Page")
 ![Password Reset Link Sent to Email](/Screenshots/8.JPG?raw=true "Password Reset Link Sent to Email")
 ![Reset Password Page](/Screenshots/9.JPG?raw=true "Reset Password Page")
@@ -105,12 +111,6 @@ Here are my observations that needs to be implemented to make this project compl
 ![User Profile Page](/Screenshots/12.JPG?raw=true "User Profile Page")
 ![Upload New Profile Photo of user](/Screenshots/13.JPG?raw=true "Upload New Profile Photo of user")
 ![User Profile Page Change Password Section](/Screenshots/14.JPG?raw=true "User Profile Page Change Password Section")
-
-## Tech Stack
-
-**Client:** Pug Template Engine (SSR - Server Side Rendering)
-
-**Server:** Node.js, Express, MongoDB
 
 ## Installation
 
