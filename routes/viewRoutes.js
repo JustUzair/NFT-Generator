@@ -34,10 +34,5 @@ router.get(
   viewController.getMyUploads // Get art layers uploaded by the artist
 );
 
-router.post(
-  "/submit-user-data",
-  authController.protect,
-  viewController.updateUserData //Update data of user and re-render  Profile/My Account Page
-);
 router.use("*", authController.isLoggedIn); // For un-mounted routes, display if the user is logged in or not
 module.exports = router;

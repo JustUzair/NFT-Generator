@@ -88,6 +88,9 @@ userSchema.pre("save", async function (next) {
     if (existsSync(`./public/img/arts/${this._id}`)) {
       await mkdir(`./public/img/arts/${this._id}/layers`);
     }
+    if (existsSync(`./public/img/arts/${this._id}`)) {
+      await mkdir(`./public/img/arts/${this._id}/out`);
+    }
   } catch (err) {
     return next();
   }

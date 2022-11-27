@@ -5,22 +5,37 @@ const Art = require("./../models/artModel");
 const { readdir } = require("fs");
 const crypto = require("crypto");
 
+/*
+  |-------------------------------------------|
+  |         Render Connect Wallet Page        |
+  |-------------------------------------------|
+*/
 exports.getWalletConnect = (req, res) => {
   res.status(200).render("connectWallet", {
     title: "Connect Wallet",
   });
 };
+
+/*
+  |--------------------------------------------|
+  |         Render Artist Overview Page        |
+  |--------------------------------------------|
+*/
 exports.getOverview = catchAsync(async (req, res, next) => {
-  // 1. Get tour data from collection
+  //Renders all the users with role = artist
   const artists = await User.find({ role: "artist" });
   console.log(`${artists[0]._id}`);
-  // 2. Build template
-  // 3. render template
   res.status(200).render("overview", {
     title: "All Artists",
     artists,
   });
 });
+
+/*
+  |--------------------------------------------|
+  |         Render Generated Arts Page         |
+  |--------------------------------------------|
+*/
 exports.getGeneratedArts = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const artist = await User.findById(id);
@@ -33,6 +48,11 @@ exports.getGeneratedArts = catchAsync(async (req, res, next) => {
   });
 });
 
+/*
+  |-----------------------------------------------------------------------|
+  |         Render Layer files uploaded by an artist                      |
+  |-----------------------------------------------------------------------|
+*/
 exports.getMyUploads = catchAsync(async (req, res, next) => {
   const generatedFilesProm = new Promise((resolve, reject) => {
     return readdir(`./public/img/arts/${req.user.id}/out`, (err, filenames) =>
@@ -75,46 +95,47 @@ exports.getMyUploads = catchAsync(async (req, res, next) => {
     }
   });
   //   console.log(`Attribute Count : ${JSON.stringify(attributeCount)}`);
+  /*
+  |----------------------------------------------------------------------------------------------------|
+  |         Return the attribute count object, in order to iterate over files and render images        |
+  |----------------------------------------------------------------------------------------------------|
+*/
   res.status(200).render("uploadedArts", {
     title: "My Uploads",
     attributeCount,
     generatedCount: generatedFiles.length,
   });
 });
+
+/*
+  |----------------------------------|
+  |         Render Login Form        |
+  |----------------------------------|
+*/
 exports.getLoginForm = (req, res) => {
   res.status(200).render("login", {
     title: "Login",
   });
 };
-
+/*
+  |-----------------------------------|
+  |         Render Signup Form        |
+  |-----------------------------------|
+*/
 exports.getSignUpForm = (req, res) => {
   res.status(201).render("signup", {
     title: "Sign Up",
   });
 };
 
+/*
+  |--------------------------------------------|
+  |         Render Account/Profile Page        |
+  |--------------------------------------------|
+*/
 exports.getAccount = (req, res) => {
   res.status(200).render("account", {
     title: `${req.user.name}`,
-  });
-};
-
-exports.updateUserData = async (req, res) => {
-  // console.log(req.body);
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user.id,
-    {
-      name: req.body.name,
-      email: req.body.email,
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-  res.status(200).render("account", {
-    title: `${req.user.name}`,
-    user: updatedUser,
   });
 };
 
