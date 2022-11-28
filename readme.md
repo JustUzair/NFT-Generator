@@ -56,6 +56,10 @@ The logics / features that are implemented on top of [Fireship.io](https://www.y
   - Protection against NoSQL Injection
   - Prevention of parameter pollution
 
+## API Documentation
+
+- Read API Documentation on [Postman](https://documenter.getpostman.com/view/20867739/2s8YsxtW1y)
+
 ## Acknowledgements
 
 - Inspiration [Fireship.io](https://www.youtube.com/watch?v=meTpMP0J5E8)
