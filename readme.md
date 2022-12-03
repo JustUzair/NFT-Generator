@@ -53,7 +53,7 @@ The logics / features that are implemented on top of [Fireship.io](https://www.y
 
 - **_Global Error Handling, both on server as well as the client side._**
 
-- \*\*\*Updating data of oneself.
+- **_Updating data of oneself._**
 
 - **_Implemented Security measures like:_**
 - **_Protection against XSS (Cross Site Scripting)_**
