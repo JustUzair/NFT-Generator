@@ -3,8 +3,12 @@
 NFT generator website, is a full stack, NodeJS application that allow users to sign-up based on their role preferences
 There are 2 roles for which user can sign-up:
 
+---
+
 - User
 - Artist
+
+---
 
 Artist are users who can upload their arts and generate NFTs based on their uploaded layers.
 
