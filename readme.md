@@ -41,9 +41,9 @@ The logics / features that are implemented on top of [Fireship.io](https://www.y
 
 - **_Restricting users from performing un-authorized actions, for example:_**
 
-- **_Allow only artists to upload and generate arts_**
-- **_Allow only admin(s) to view all the users of the system_**
-- **_All the user can update their own data, but only can admin(s) can update other user's data including their own._**
+    - **_Allow only artists to upload and generate arts_**
+    - **_Allow only admin(s) to view all the users of the system_**
+    - **_All the user can update their own data, but only can admin(s) can update other user's data including their own._**
 
 - **_Reset password and forgot functionality by sending the password reset link over to the Users's email._**
 
