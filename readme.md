@@ -19,6 +19,8 @@ Conditional Rendering based on currently logged in user's role
 
 The logics / features that are implemented on top of [Fireship.io](https://www.youtube.com/watch?v=meTpMP0J5E8)'s existing one are:
 
+- Implemented Multi-processing to use all the available threads in the system.
+
 - Dynamically calculated the no. of layers that are uploaded by the artists, based on them generated the arts.
 
 - Storing the data about generated arts in database
