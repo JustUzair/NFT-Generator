@@ -19,6 +19,8 @@ Conditional Rendering based on currently logged in user's role.
 
 The logics / features that are implemented on top of [Fireship.io](https://www.youtube.com/watch?v=meTpMP0J5E8)'s existing one are:
 
+---
+
 - **_Implemented Multi-processing to use all the available threads in the system._**
 
 - **_Dynamically calculated the no. of layers that are uploaded by the artists, based on them generated the arts._**
@@ -57,6 +59,8 @@ The logics / features that are implemented on top of [Fireship.io](https://www.y
 - **_Protection against XSS (Cross Site Scripting)_**
 - **_Protection against NoSQL Injection_**
 - **_Prevention of parameter pollution_**
+
+---
 
 ## API Documentation
 
