@@ -56,9 +56,9 @@ The logics / features that are implemented on top of [Fireship.io](https://www.y
 - **_Updating data of oneself._**
 
 - **_Implemented Security measures like:_**
-- **_Protection against XSS (Cross Site Scripting)_**
-- **_Protection against NoSQL Injection_**
-- **_Prevention of parameter pollution_**
+    - **_Protection against XSS (Cross Site Scripting)_**
+    - **_Protection against NoSQL Injection_**
+    - **_Prevention of parameter pollution_**
 
 ---
 
