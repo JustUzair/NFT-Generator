@@ -1,71 +1,73 @@
-style.
-    .grid {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    }
-    .btn {
-    margin: 0.5rem;
-    padding: 0.7rem;
-    text-align: center;
-    color: #0070f3;
-    text-decoration: none;
-    border: 1px solid #0070f3;
-    border-radius: 10px;
-    transition: color 0.15s ease, border-color 0.15s ease;
-    width: 100%;
-    background-color: white;
-    }
-    .btn:hover,
-    .btn:focus,
-    .btn:active {
-    cursor: pointer;
-    background-color: #fafafa;
-    }
-    .row {
-    display: flex;
-    margin-bottom: 0.5rem;
-    width: 100%;
-    }
-    .label {
-    flex-basis: 45%;
-    padding-right: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: right;
-    font-weight: bold;
-    }
-    .select {
-    flex-basis: 30%;
-    text-align: left;
-    padding: 0.3rem 0.8rem;
-    font-size: 1rem;
-    border-radius: 8px;
-    }
-    .footer {
-    display: flex;
-    flex: 1;
-    padding: 2rem 0;
-    border-top: 1px solid #eaeaea;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10rem;
-    }
-    .footer a {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-    }
-    .logo {
-    height: 1.5rem;
-    margin-left: 0.5rem;
-    }
-    @media (max-width: 1200px) {
-    .container {
-    width: 100%;
-    }
-    }
+extends base
+block append head
+    style.
+        .grid {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        }
+        .btn, .btn:link, .btn:visited {
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            display: inline-block;
+            text-decoration: none;
+            position: relative;
+            -webkit-transition: all 0.4s;
+            transition: all 0.4s;
+            font-weight: 400;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(93.51deg, #9B51E0 2.84%, #3081ED 99.18%);
+            color: #fff;
+            padding: 1rem 1.5rem !important;
+            border-radius:10px;
+        }
+        .row {
+        display: flex;
+        margin-bottom: 0.5rem;
+        width: 100%;
+        }
+        .label {
+        flex-basis: 45%;
+        padding-right: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        font-weight: bold;
+        }
+        .select {
+        flex-basis: 30%;
+        text-align: left;
+        padding: 0.3rem 0.8rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        }
+        .footer {
+        display: flex;
+        flex: 1;
+        padding: 2rem 0;
+        border-top: 1px solid #eaeaea;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10rem;
+        }
+        .footer a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-grow: 1;
+        }
+        .logo {
+        height: 1.5rem;
+        margin-left: 0.5rem;
+        }
+        @media (max-width: 1200px) {
+        .container {
+        width: 100%;
+        }
+        }
 block content
     .container
         // Logged In
@@ -89,33 +91,33 @@ block content
         const web3authSdk = window.Modal;
         let web3AuthInstance = null;
         (async function init() {
-        $(".btn-logged-in").hide();
-        $("#sign-tx").hide();
-        web3AuthInstance = new web3authSdk.Web3Auth({
-        chainConfig: {
-        chainNamespace: "eip155",
-        rpcTarget: "https://rpc.ankr.com/eth_goerli",
-        chainId: "0x5",
-        },
-        uiConfig: {
-        theme: "dark",
-        defaultLanguage: "en",
-        },
-        clientId: "BDgL0MrbmcdYox_pUAabv-IR002jQjgO5zCvuSdBYUHj4xYbPGMNfRKREn6wLlYZ5N_xG_x0Vrn38Ko4k5pRpoo", // get your clientId from https://developer.web3auth.io
-        });
-        subscribeAuthEvents(web3AuthInstance);
-        await web3AuthInstance.initModal();
-        console.log("web3AuthInstance", web3AuthInstance, web3AuthInstance.provider);
-        if (web3AuthInstance.provider) {
-        $(".btn-logged-in").show();
-        $(".btn-logged-out").hide();
-        if (web3AuthInstance.connectedAdapterName === "openlogin") {
-        $("#sign-tx").show();
-        }
-        } else {
-        $(".btn-logged-out").show();
-        $(".btn-logged-in").hide();
-        }
+            $(".btn-logged-in").hide();
+            $("#sign-tx").hide();
+            web3AuthInstance = new web3authSdk.Web3Auth({
+                chainConfig: {
+                chainNamespace: "eip155",
+                rpcTarget: "https://rpc.ankr.com/eth_goerli",
+                chainId: "0x5",
+            },
+            uiConfig: {
+                theme: "dark",
+                defaultLanguage: "en",
+            },
+            clientId: "BDgL0MrbmcdYox_pUAabv-IR002jQjgO5zCvuSdBYUHj4xYbPGMNfRKREn6wLlYZ5N_xG_x0Vrn38Ko4k5pRpoo", // get your clientId from https://developer.web3auth.io
+            });
+            subscribeAuthEvents(web3AuthInstance);
+            await web3AuthInstance.initModal();
+            console.log("web3AuthInstance", web3AuthInstance, web3AuthInstance.provider);
+            if (web3AuthInstance.provider) {
+                $(".btn-logged-in").show();
+                $(".btn-logged-out").hide();
+            if (web3AuthInstance.connectedAdapterName === "openlogin") {
+                $("#sign-tx").show();
+            }
+            } else {
+                $(".btn-logged-out").show();
+                $(".btn-logged-in").hide();
+            }
         })();
         function subscribeAuthEvents(web3auth) {
             web3auth.on("connected", (data) => {

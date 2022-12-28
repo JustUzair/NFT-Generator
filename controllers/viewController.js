@@ -6,17 +6,6 @@ const { readdir } = require("fs");
 const crypto = require("crypto");
 
 /*
-  |-------------------------------------------|
-  |         Render Connect Wallet Page        |
-  |-------------------------------------------|
-*/
-exports.getWalletConnect = (req, res) => {
-  res.status(200).render("connectWallet", {
-    title: "Connect Wallet",
-  });
-};
-
-/*
   |--------------------------------------------|
   |         Render Artist Overview Page        |
   |--------------------------------------------|
