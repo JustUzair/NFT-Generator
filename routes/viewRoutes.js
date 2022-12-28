@@ -16,7 +16,6 @@ const authController = require("../controllers/authController");
 */
 
 router.get("/", authController.isLoggedIn, viewController.getOverview); //ROOT URL - Render Home page
-// router.get("/connectWallet", viewController.getWalletConnect);
 router.get(
   "/artists/:id/arts",
   authController.isLoggedIn, // Check if the user is already logged in
