@@ -1,5 +1,7 @@
 # NFT-Generator
 
+## Deployed at : https://mintrrs.onrender.com/
+
 NFT generator website, is a full stack, NodeJS application that allow users to sign-up based on their role preferences
 There are 2 roles for which user can sign-up:
 

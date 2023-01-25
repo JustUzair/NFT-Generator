@@ -142,7 +142,7 @@ exports.generateArts = catchAsync(async (req, res, next) => {
 
     // Exactly 1 Layer File, for each attribute, generate single art
     if (possibleCombinations == 1) possibleCombinations = 0; // value is set because, art is generated in do-while loop
-    console.log(`Combinations : ${possibleCombinations}`);
+    // console.log(`Combinations : ${possibleCombinations}`);
 
     // An artist can only generate 200 NFTs
     let index = Math.min(possibleCombinations - 1, 199);
