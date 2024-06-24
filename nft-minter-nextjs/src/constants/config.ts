@@ -31,7 +31,6 @@ const connectors = connectorsForWallets(
         phantomWallet,
         argentWallet,
         okxWallet,
-        bifrostWallet,
       ],
     },
   ],
