@@ -19,7 +19,7 @@ export async function GET(req: Request, context: any) {
       for example: artistWalletAddress: 0xA72e562f24515C060F36A2DA07e0442899D39d2c
       */
     });
-    console.log(artist);
+    // console.log(artist);
 
     if (!artist) {
       return NextResponse.json(
