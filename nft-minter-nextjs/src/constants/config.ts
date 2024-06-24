@@ -13,9 +13,10 @@ import {
   trustWallet,
   argentWallet,
   okxWallet,
+  bifrostWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
-const projectId = "cd5fb49ae0a10deaae3b571887513d7a";
+const projectId = process.env.NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID || "";
 
 const connectors = connectorsForWallets(
   [
@@ -30,6 +31,7 @@ const connectors = connectorsForWallets(
         phantomWallet,
         argentWallet,
         okxWallet,
+        bifrostWallet,
       ],
     },
   ],
