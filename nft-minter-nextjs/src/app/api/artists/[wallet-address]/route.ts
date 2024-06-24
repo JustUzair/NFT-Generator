@@ -3,7 +3,7 @@ import { dbConnect } from "@/lib/db";
 import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest, context: any) {
+export async function GET(req: Request, context: any) {
   try {
     await dbConnect();
     const artistWalletAddress: string = context.params["wallet-address"];
