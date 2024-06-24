@@ -30,7 +30,6 @@ const connectors = connectorsForWallets(
         trustWallet,
         phantomWallet,
         argentWallet,
-        okxWallet,
       ],
     },
   ],
