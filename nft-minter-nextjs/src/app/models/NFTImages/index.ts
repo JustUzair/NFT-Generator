@@ -14,7 +14,7 @@ const nftImagesSchema = new mongoose.Schema({
       basePrice: { type: Number, required: true },
     },
   ],
-  collectionIPFSLink: { type: String, required: true },
+  collectionIPFSLink: { type: String, required: false },
 });
 
 // Restart server after changing models

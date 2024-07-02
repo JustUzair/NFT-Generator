@@ -174,6 +174,7 @@ async function createImage(
 
   // console.log("Inside createImage");
   /*
+  //  If n layers are uploaded for each attribute, then the possible range to pick layer is 0 to n-1
       |---------------------------------------------------|
       |             1) Generate Combinations              |
       |         const bg = randInt(5); ---> o/p: 0        |
@@ -287,10 +288,11 @@ async function createImage(
       });
 
       // 1. Upload NFT Image to IPFS
-      const fileToUpload = Readable.from(
-        `data:image/svg+xml;base64,${Buffer.from(final).toString("base64")}`
-      );
+      // const fileToUpload = Readable.from(
+      //   `data:image/svg+xml;base64,${Buffer.from(final).toString("base64")}`
+      // );
 
+      const fileToUpload = Readable.from(final);
       const pinResult = await pinata.pinFileToIPFS(fileToUpload, {
         pinataMetadata: {
           name: `${user} : ${name}`,
@@ -311,6 +313,10 @@ async function createImage(
           {
             trait_type: "NFT",
             value: "One of a Kind",
+          },
+          {
+            trait_type: "genetic mutation sequence",
+            value: face.toString(),
           },
         ],
       };
@@ -380,7 +386,14 @@ async function generateNFT(
         }
       );
 
-      NFTImagesInstance.collectionIPFSLink = `ipfs://${pinResult.IpfsHash}`;
+      // NFTImagesInstance.collectionIPFSLink = `ipfs://${pinResult.IpfsHash}`;
+      await NFTImages.updateOne(
+        { _id: NFTImagesInstance._id },
+        { $set: { collectionIPFSLink: `ipfs://${pinResult.IpfsHash}` } }
+      );
+      await NFTImagesInstance.save({
+        validateBeforeSave: false,
+      });
       index--;
     } catch (err: any) {
       console.log(err.message);
@@ -427,6 +440,22 @@ async function generateArtsFromLayers(
       // console.log("inside else");
 
       // Layer Files are found, calculate possible combinations from the files
+
+      /*
+        |-------------------------------------------------------------------------|
+        |   1) bg - 1 != 0 ? bg - 1 : 1                                          |
+        |   2) hair - 1 != 0 ? hair - 1 : 1                                      |
+        |   3) eyes - 1 != 0 ? eyes - 1 : 1                                      |
+        |   4) nose - 1 != 0 ? nose - 1 : 1                                      |
+        |   5) mouth - 1 != 0 ? mouth - 1 : 1                                    |
+        |   6) beard - 1 != 0 ? beard - 1 : 1                                    |
+        |   7) head - 1 != 0 ? head - 1 : 1                                      |
+        |-------------------------------------------------------------------------|
+        |   8) possibleCombinations = 1 * 1 * 1 * 1 * 1 * 1 * 1                  |
+        |-------------------------------------------------------------------------|
+        |   9) possibleCombinations = 1                                          |
+        |-------------------------------------------------------------------------|
+      */
       let possibleCombinations =
         (attributeCount.bg - 1 != 0 ? attributeCount.bg - 1 : 1) *
         (attributeCount.hair - 1 != 0 ? attributeCount.hair - 1 : 1) *
@@ -558,7 +587,7 @@ function getLayers(imagesData: FormDataEntryValue[]) {
     hairLayers,
   };
 }
-
+// Entry Point
 export async function POST(req: Request, res: Response) {
   await dbConnect();
 
@@ -599,7 +628,7 @@ export async function POST(req: Request, res: Response) {
       }
     );
   }
-
+  // Extracting the layers into seprate array elements
   const {
     noseLayers,
     headLayers,
@@ -617,6 +646,8 @@ export async function POST(req: Request, res: Response) {
   // console.log(`beardLayers`, beardLayers);
   // console.log(`eyesLayers`, eyesLayers);
   // console.log(`hairLayers`, hairLayers);
+
+  // Count of each attribute
 
   const attributeCount = {
     bg: bgLayers.length,
