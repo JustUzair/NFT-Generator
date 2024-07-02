@@ -8,6 +8,8 @@ import mongoose, { Mongoose } from "mongoose";
 export async function dbConnect() {
   try {
     const DB = process.env.DATABASE || "";
+    // console.log("DB URL", DB);
+
     if ((global as any).mongoose && (global as any).mongoose.conn) {
       console.log("Connected from previous");
       return (global as any).mongoose.conn;
