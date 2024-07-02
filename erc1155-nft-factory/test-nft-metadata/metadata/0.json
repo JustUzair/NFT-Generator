@@ -1,0 +1,19 @@
+{
+  "image": "ipfs://QmTxEyXaehnU3MMzRB2Coazobvc3fQUtCpsdX49i9R2Qa7",
+  "name": "Gojo Satoru",
+  "description": "A Profile Pic of Gojo Satoru",
+  "attributes": [
+    {
+      "trait_type": "Edition",
+      "value": "1"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Extra"
+    },
+    {
+      "trait_type": "SZN",
+      "value": "Pump"
+    }
+  ]
+}

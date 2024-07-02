@@ -1,0 +1,19 @@
+{
+  "image": "ipfs://QmW5t2jUnwmNqJpkRHLK8hmbiHZ5RE1fHMdLjL3Vz7oXXk",
+  "name": "Ryoumen Sukuna",
+  "description": "A Profile Pic of Ryoumen Sukuna",
+  "attributes": [
+    {
+      "trait_type": "Edition",
+      "value": "1"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Extra"
+    },
+    {
+      "trait_type": "SZN",
+      "value": "Pump"
+    }
+  ]
+}
