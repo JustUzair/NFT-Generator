@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
 import { Request as ExpressRequest } from "express";
 import * as nc from "next-connect";
-import fs from "fs";
+import fs, { read } from "fs";
 const memoryStorage = multer.memoryStorage();
 
 // export const uploadImages = multer({
@@ -19,6 +19,32 @@ const memoryStorage = multer.memoryStorage();
 // });
 
 async function generateArtsFromLayers() {}
+
+// returns svg contents from a file
+async function getContentsOfFile(file: File) {
+  const reader = file.stream().getReader();
+  const chunks: Uint8Array[] = [];
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+  }
+
+  const concatenated = new Uint8Array(
+    chunks.reduce((acc, chunk) => acc + chunk.length, 0)
+  );
+  let offset = 0;
+  for (const chunk of chunks) {
+    concatenated.set(chunk, offset);
+    offset += chunk.length;
+  }
+  const data = new TextDecoder().decode(concatenated);
+  console.log(data);
+
+  return data;
+}
+
 function getLayers(imagesData: FormData) {
   const noseLayers: File[] = [];
   const faceLayers: File[] = [];
@@ -124,6 +150,7 @@ export async function POST(req: Request, res: Response) {
       hairLayers.length
   );
 
+  getContentsOfFile(noseLayers[0]);
   //   console.log("here");
 
   // console.log("------ FILES ------");
