@@ -8,12 +8,15 @@ const nftImagesSchema = new mongoose.Schema({
   },
   nftImagesLinks: [
     {
-      url: String,
-      required: true,
+      decentralizedURL: { type: String, required: true },
+      centralizedURL: { type: String, required: true },
+      jsonFileDecentralizedURL: { type: String, required: false },
+      basePrice: { type: Number, required: true },
     },
   ],
+  collectionIPFSLink: { type: String, required: true },
 });
 
 // Restart server after changing models
-export default mongoose.models.Artists ||
+export default mongoose.models.NFTImages ||
   mongoose.model("NFTImages", nftImagesSchema);

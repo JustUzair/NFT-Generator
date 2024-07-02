@@ -5,9 +5,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
 import { Request as ExpressRequest } from "express";
 import * as nc from "next-connect";
-import fs, { read } from "fs";
+import fs, { mkdir, read, writeFile, writeFileSync } from "fs";
 import Artists from "@/app/models/Artists";
 import { dbConnect } from "@/lib/db";
+import NFTImages from "@/app/models/NFTImages";
+import mongoose, { Mongoose } from "mongoose";
+import path from "path";
 const memoryStorage = multer.memoryStorage();
 
 // export const uploadImages = multer({
@@ -82,7 +85,7 @@ async function getLayer(
   layerFileNumber: number,
   skip = 0.0
 ) {
-  console.log("Inside getLayer");
+  // console.log("Inside getLayer");
 
   const svg = await getContentsOfFile(
     layersFiles[`${fileType.type}Layers`][layerFileNumber]
@@ -108,13 +111,68 @@ async function getLayer(
   return Math.random() > skip ? layer : ""; //return the layer
 }
 
+async function createFolderInPublicAndGetPath(folderName: string) {
+  // Get the path to the public directory
+  const publicDir = path.join(process.cwd(), "public");
+
+  // Create the full path for the new folder
+  const newFolderPath = path.join(publicDir, folderName);
+
+  // Check if the folder already exists
+  if (!fs.existsSync(newFolderPath)) {
+    // If it doesn't exist, create it
+    fs.mkdirSync(newFolderPath, { recursive: true });
+    console.log(`Folder '${folderName}' created in public directory`);
+  } else {
+    console.log(`Folder '${folderName}' already exists in public directory`);
+  }
+
+  return newFolderPath;
+}
+
+async function writeJsonFile(
+  user: string,
+  meta: string,
+  NFTImagesInstance: any
+) {
+  try {
+    // Get the path to the public directory
+    const publicDir = path.join(process.cwd(), "public");
+
+    // Create the full path for the user's output directory
+    const userOutDir = path.join(publicDir, user, "out");
+
+    // Ensure the directory exists
+    await createFolderInPublicAndGetPath(`/${user}/out/`);
+
+    // Create the full path for the JSON file
+    const fileName = `${
+      NFTImagesInstance.nftImagesLinks.length > 0
+        ? NFTImagesInstance.nftImagesLinks.length
+        : 0
+    }.json`;
+    const filePath = path.join(userOutDir, fileName);
+
+    // Write the file
+    await fs.promises.writeFile(filePath, JSON.stringify(JSON.parse(meta)));
+
+    console.log(`File written successfully: ${filePath}`);
+    return filePath;
+  } catch (err) {
+    console.error("Error writing file:", err);
+    throw err;
+  }
+}
+
 async function createImage(
   index: number,
   user: string,
   attribute: AttributeProps,
   layersFiles: LayerFilesProps
 ) {
-  console.log("Inside createImage");
+  const pinata = await getPinataClient();
+
+  // console.log("Inside createImage");
   /*
       |---------------------------------------------------|
       |             1) Generate Combinations              |
@@ -206,69 +264,123 @@ async function createImage(
         );
       // Create a json object to write to JSON file
 
-      console.log(`Final SVG`, Buffer.from(final).toString("base64"));
+      // console.log(
+      //   `Final SVG`,
+      //   `data:image/svg+xml;base64,${Buffer.from(final).toString("base64")}`
+      // );
+
+      let NFTImagesInstance = await NFTImages.findOne({
+        artist: user,
+      });
+
+      if (!NFTImagesInstance) {
+        console.log(`user id `, user);
+
+        NFTImagesInstance = new NFTImages({
+          artist: new mongoose.Types.ObjectId(user),
+        });
+        await NFTImagesInstance.save();
+      }
+
+      NFTImagesInstance = await NFTImages.findOne({
+        artist: user,
+      });
+
+      // 1. Upload NFT Image to IPFS
+      const fileToUpload = Readable.from(
+        `data:image/svg+xml;base64,${Buffer.from(final).toString("base64")}`
+      );
+
+      const pinResult = await pinata.pinFileToIPFS(fileToUpload, {
+        pinataMetadata: {
+          name: `${user} : ${name}`,
+        },
+        pinataOptions: {
+          cidVersion: 0,
+        },
+      });
 
       const meta = {
         name,
         description,
-        image: `${index}.png`,
+        image: `ipfs://${pinResult.IpfsHash}`,
+        // image: `data:image/svg+xml;base64,${Buffer.from(final).toString(
+        //   "base64"
+        // )}`,
         attributes: [
           {
-            beard: "",
-            rarity: 0.01,
+            trait_type: "NFT",
+            value: "One of a Kind",
           },
         ],
       };
+
+      await writeJsonFile(user, JSON.stringify(meta), NFTImagesInstance);
+
+      const pinJSONResult = await pinata.pinJSONToIPFS(
+        {
+          ...meta,
+        },
+        {
+          pinataMetadata: {
+            name: `${
+              NFTImagesInstance.nftImagesLinks.length > 0
+                ? NFTImagesInstance.nftImagesLinks.length
+                : 0
+            }`,
+          },
+        }
+      );
+      console.log(`pinResult : `, pinResult);
+      console.log(`pinJSONResult : `, pinJSONResult);
+
+      NFTImagesInstance.nftImagesLinks.push({
+        decentralizedURL: `ipfs://${pinResult.IpfsHash}`,
+        centralizedURL: `https://ipfs.io/ipfs/${pinResult.IpfsHash}`,
+        // jsonFileDecentralizedURL: `ipfs://${pinJSONResult.IpfsHash}`,
+        basePrice: 0.005,
+      });
+      await NFTImagesInstance.save();
       // @TODO
       /*
-      1. Generate JSON
-      2. Upload NFT to IPFS
+      
+      2. Generate JSON
       3. Put in json file
       4. upload json to IPFS
       */
-
-      // try {
-      //   await writeFile(
-      //     // Write JSON data to json file
-      //     `./public/img/arts/${user}/out/${index}.json`,
-      //     JSON.stringify(meta)
-      //   );
-
-      //   // Write the generated SVG file to its own SVG file
-
-      //   await writeFile(`./public/img/arts/${user}/out/${index}.svg`, final);
-      // } catch (err: any) {
-      //   console.log(err.message);
-      // }
-
-      // await svgToPng(index, user); // Convert SVG image to PNG
-      const basePrice = 0.05; // static price for each art
-
-      // await Art.create({
-      //   // Persist the newly created art in the database
-      //   artist: user,
-      //   photo: `${index}.png`,
-      //   price: basePrice,
-      //   name,
-      //   description,
-      // });
     }
   } catch (err: any) {
-    console.log(err.message);
+    console.log(err);
   }
 }
 
 async function generateNFT(
   index: number,
-  id: string,
+  user: string,
   attributeCount: AttributeProps,
   layersFiles: LayerFilesProps
 ) {
-  console.log("Inside generateNFT");
-
+  // console.log("Inside generateNFT");
+  const pinata = await getPinataClient();
   do {
     try {
-      await createImage(index, id, attributeCount, layersFiles);
+      await createImage(index, user, attributeCount, layersFiles);
+      const NFTImagesInstance = await NFTImages.findOne({
+        artist: user,
+      }).populate("artist");
+      if (!NFTImagesInstance) {
+        throw new Error("NFTImagesInstance not found");
+      }
+      const pinResult = await pinata.pinFromFS(
+        await createFolderInPublicAndGetPath(`/${user}/out/`),
+        {
+          pinataMetadata: {
+            name: `${NFTImagesInstance.artist.artistWalletAddress} : NFTImages`,
+          },
+        }
+      );
+
+      NFTImagesInstance.collectionIPFSLink = `ipfs://${pinResult.IpfsHash}`;
       index--;
     } catch (err: any) {
       console.log(err.message);
@@ -293,7 +405,7 @@ async function generateArtsFromLayers(
 ) {
   await dbConnect();
 
-  console.log("Inside generateArtsFromLayers");
+  // console.log("Inside generateArtsFromLayers");
   console.log(attributeCount);
 
   try {
@@ -396,7 +508,7 @@ async function getContentsOfFile(file: File) {
   return data;
 }
 
-function getLayers(imagesData: FormData) {
+function getLayers(imagesData: FormDataEntryValue[]) {
   const noseLayers: File[] = [];
   const headLayers: File[] = [];
   const mouthLayers: File[] = [];
@@ -449,22 +561,23 @@ function getLayers(imagesData: FormData) {
 
 export async function POST(req: Request, res: Response) {
   await dbConnect();
-  //   uploadImages.array("images");
-  const pinata = await getPinataClient();
-  const imagesData = await req.formData();
-  // Extracting params from url
-  //  example url : http://localhost:3000/api/upload-images?artistWalletAddress=0xA72e562f24515C060F36A2DA07e0442899D39d2c
-  // after split
-  //  0 index - http://localhost:3000/api/upload-images
-  //  1 index - artistWalletAddress=0xA72e562f24515C060F36A2DA07e0442899D39d2c
-  // split 1 index : artistWalletAddress=0xA72e562f24515C060F36A2DA07e0442899D39d2c with "="
-  // 0 index - artistWalletAddress
-  // 1 index - 0xA72e562f24515C060F36A2DA07e0442899D39d2c
-  const artistWalletAddress = req.url.split("?")[1].split("=")[1];
-  // @NOTE - change this
-  // console.log(`body : \n`, req.body);
 
-  console.log(`artistWalletAddress\n`, artistWalletAddress);
+  const formData = await req.formData();
+  const imagesData = formData.getAll("images");
+  const artistWalletAddress = formData.get("artistWalletAddress");
+
+  if (!imagesData || !artistWalletAddress) {
+    return Response.json(
+      {
+        status: "error",
+        errorData: "Please provide all the required fields",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+  // console.log(`artistWalletAddress\n`, artistWalletAddress);
   //   console.log(`req.files\n`, req.files);
   try {
     imagesData.forEach((image) => {
@@ -529,53 +642,31 @@ export async function POST(req: Request, res: Response) {
   // getContentsOfFile(noseLayers[0]);
   //   console.log("here");
 
-  generateArtsFromLayers(attributeCount, artistWalletAddress, {
-    noseLayers,
-    headLayers,
-    mouthLayers,
-    bgLayers,
-    beardLayers,
-    eyesLayers,
-    hairLayers,
-  });
-
-  // console.log("------ FILES ------");
-
-  // console.log(req.files);
-
-  //   const files = JSON.parse(JSON.stringify(imagesData));
-  //   console.log(files);
-
-  // Upload multiple files
-  //   let counter = 0;
-  //   const filesToUpload = imagesData?.forEach((file: File) => {
-  //     console.log(`Type of file`, typeof file);
-  //     console.log(file);
-
-  //     // return new File(Buffer.from(file), `${counter++}.json`);
-  //   });
-  //   console.log(`filesToUpload\n`, filesToUpload);
-
-  // upload single file
-  //   const fileToUpload = Readable.from(Buffer.from(files[0].buffer, "base64"));
-
-  //   const pinResult = await pinata.pinFileToIPFS(fileToUpload, {
-  //     pinataMetadata: {
-  //       name: "Testing pins",
-  //     },
-  //     pinataOptions: {
-  //       cidVersion: 0,
-  //     },
-  //   });
-
-  // console.log("------ FILES  TO UPload------");
-  //   console.log(pinResult);
-  //   const ipfsHash = pinResult.IpfsHash; //IpfsHash
-
-  // console.log(fileToUpload);
+  try {
+    generateArtsFromLayers(attributeCount, artistWalletAddress as string, {
+      noseLayers,
+      headLayers,
+      mouthLayers,
+      bgLayers,
+      beardLayers,
+      eyesLayers,
+      hairLayers,
+    });
+  } catch (err: any) {
+    return Response.json(
+      {
+        status: "error",
+        messageL: `🔴 ${err.message || "Something went wrong"}`,
+      },
+      {
+        status: 400,
+      }
+    );
+  }
 
   return NextResponse.json(
     {
+      status: "success",
       message: "Uploaded to IPFS",
       //   imageURL: `ipfs://${ipfsHash}`,
     },
@@ -584,50 +675,3 @@ export async function POST(req: Request, res: Response) {
     }
   );
 }
-
-// const uploadNFTMetadataToIPFS = async (req: Request, res: Response) => {
-//   try {
-//     const pinata = await getPinataClient();
-
-//     // console.log(req.body);
-
-//     const { metadata, title } = req.body;
-//     // console.log(metadata, title);
-
-//     const parsedMetadata = JSON.parse(JSON.stringify(metadata));
-
-//     // const pinResult = await pinata.pinJSONToIPFS({
-//     //   parsedMetadata,
-//     // },{
-//     //   pinataMetadata: {
-//     //     name: `Quest: ${title} metadata URI`
-//     //     }
-//     // },
-//     // });
-
-//     const pinResult = await pinata.pinJSONToIPFS(
-//       {
-//         ...parsedMetadata,
-//       },
-//       {
-//         pinataMetadata: {
-//           name: `Quest: "${title}" metadata URI`,
-//         },
-//       }
-//     );
-
-//     console.log(pinResult);
-//     const ipfsHash = pinResult.IpfsHash; //IpfsHash
-//     console.log(ipfsHash);
-
-//     return res.status(200).json({
-//       message: "success",
-//       metadataURI: `ipfs://${ipfsHash}`,
-//     });
-//   } catch (err) {
-//     console.log(err);
-//     res.status(400).json({
-//       message: "catch",
-//     });
-//   }
-// };
