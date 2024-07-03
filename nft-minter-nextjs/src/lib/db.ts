@@ -7,7 +7,7 @@ import mongoose, { Mongoose } from "mongoose";
 
 export async function dbConnect() {
   try {
-    const DB = process.env.DATABASE || "";
+    const DB = process.env.MONGODB_URI || "";
     // console.log("DB URL", DB);
 
     if ((global as any).mongoose && (global as any).mongoose.conn) {
