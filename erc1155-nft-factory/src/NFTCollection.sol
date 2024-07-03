@@ -11,18 +11,31 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol
 
 contract NFTCollection is ERC1155, Ownable, ERC1155Pausable, ERC1155Supply {
     mapping(address holder => mapping(uint256 id => bool isHolding)) public holders;
+    mapping(address user => uint256[] tokenIds) public userNFTs;
+
     // mapping(uint256 id => uint256 supply) public maxSupply;
     string public name;
     string public symbol;
+    string public CONTRACT_URI;
+    uint256 price;
+    uint256 artistRevenue;
 
     event NFTCollection__MintedToUser(uint256 indexed id, address indexed to);
 
-    constructor(address initialOwner, string memory _tokenURI, string memory _name, string memory _symbol)
-        ERC1155(_tokenURI)
-        Ownable(initialOwner)
-    {
+    constructor(
+        address initialOwner,
+        string memory _tokenURI,
+        string memory _name,
+        string memory _symbol,
+        uint256 _price
+    ) ERC1155(_tokenURI) Ownable(initialOwner) {
         name = _name;
         symbol = _symbol;
+        price = _price;
+    }
+
+    function setContractURI(string memory _newURI) public onlyOwner {
+        CONTRACT_URI = _newURI;
     }
 
     /**
@@ -52,11 +65,25 @@ contract NFTCollection is ERC1155, Ownable, ERC1155Pausable, ERC1155Supply {
     // @dev - Mint a token to msg.sender
     // @param - id: The id of the token to mint
     // @param - data: extra data to add for minting the token
-    function mint(uint256 id, address receiver, bytes memory data) public {
+    function mint(uint256 id, address receiver, bytes memory data) public payable {
         require(!holders[receiver][id], "Already Minted");
-        _mint(receiver, id, 1, data);
+        require(msg.value == price, "Incorrect Price");
+        artistRevenue += msg.value;
         holders[receiver][id] = true;
+        userNFTs[receiver].push(id);
+        _mint(receiver, id, 1, data);
         emit NFTCollection__MintedToUser(id, receiver);
+    }
+
+    // @param - id of token to mint to msg.sender
+    function mintToSender(uint256 id) public payable {
+        require(!holders[msg.sender][id], "Already Minted");
+        require(msg.value == price, "Incorrect Price");
+        artistRevenue += msg.value;
+        holders[msg.sender][id] = true;
+        userNFTs[msg.sender].push(id);
+        _mint(msg.sender, id, 1, bytes(""));
+        emit NFTCollection__MintedToUser(id, msg.sender);
     }
 
     // @notice - mintBatch is used to mint multiple tokens to an address
@@ -69,6 +96,11 @@ contract NFTCollection is ERC1155, Ownable, ERC1155Pausable, ERC1155Supply {
         public
         onlyOwner
     {
+        for (uint256 i = 0; i < ids.length; i++) {
+            require(!holders[to][ids[i]], "Already Minted");
+            holders[to][ids[i]] = true;
+            userNFTs[to].push(ids[i]);
+        }
         _mintBatch(to, ids, amounts, data);
     }
 
@@ -79,6 +111,30 @@ contract NFTCollection is ERC1155, Ownable, ERC1155Pausable, ERC1155Supply {
         override(ERC1155, ERC1155Pausable, ERC1155Supply)
     {
         super._update(from, to, ids, values);
+    }
+
+    function getNFTPrice() public view returns (uint256) {
+        return price;
+    }
+
+    function setNFTPrice(uint256 _newPrice) public onlyOwner {
+        price = _newPrice;
+    }
+
+    function getUserNFTs(address _user) public view returns (uint256[] memory) {
+        return userNFTs[_user];
+    }
+
+    function withdrawRevenue() public onlyOwner {
+        require(artistRevenue > 0, "No revenue to withdraw");
+        uint256 _artistRevenue = artistRevenue;
+        artistRevenue = 0;
+        (bool success,) = address(owner()).call{value: _artistRevenue}("");
+        require(success, "Transfer failed.");
+    }
+
+    function getWithdrawableRevenue() public view returns (uint256) {
+        return artistRevenue;
     }
 
     // function getMaxSupply(uint256 id) public view returns (uint256) {
