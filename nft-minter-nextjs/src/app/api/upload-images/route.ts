@@ -27,6 +27,10 @@ const jsonFilesToPin: Blob[] = [];
 
 const pinDirectoryToIPFS = async (folderName = "Collection") => {
   try {
+    const pinata = await getPinataClient();
+    // if (process.env.PINATA_JWT_SECRET === undefined) {
+    //   throw new Error("Please provide PINATA_JWT_SECRET");
+    // }
     const folder = folderName;
     // const json1 = { hello: "world" };
     // const json2 = { hello: "world2" };
@@ -62,16 +66,20 @@ const pinDirectoryToIPFS = async (folderName = "Collection") => {
     });
     data.append("pinataMetadata", pinataMetadata);
 
-    const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.PINATA_JWT_SECRET}`,
-      },
-      body: data,
+    // const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+    //   method: "POST",
+    //   headers: {
+    //     Authorization: `Bearer ${process.env.PINATA_JWT_SECRET}`,
+    //   },
+    //   body: data,
+    // });
+    const res = await pinata.pinFileToIPFS(data, {
+      pinataMetadata: { name: `${folder}` },
     });
-    const resData = await res.json();
-    console.log(resData);
-    return resData.IpfsHash;
+    // const resData = await res.json();
+    // console.log(resData);
+    // return resData.IpfsHash;
+    return res.IpfsHash;
   } catch (error) {
     console.log(error);
   }
@@ -409,13 +417,6 @@ async function createImage(
             : 0,
       });
       await NFTImagesInstance.save();
-      // @TODO
-      /*
-      
-      2. Generate JSON
-      3. Put in json file
-      4. upload json to IPFS
-      */
     }
   } catch (err: any) {
     console.log(err);
@@ -429,7 +430,6 @@ async function generateNFT(
   layersFiles: LayerFilesProps
 ) {
   // console.log("Inside generateNFT");
-  const pinata = await getPinataClient();
   do {
     try {
       await createImage(index, user, attributeCount, layersFiles);
@@ -739,15 +739,19 @@ export async function POST(req: Request, res: Response) {
   //   console.log("here");
 
   try {
-    generateArtsFromLayers(attributeCount, artistWalletAddress as string, {
-      noseLayers,
-      headLayers,
-      mouthLayers,
-      bgLayers,
-      beardLayers,
-      eyesLayers,
-      hairLayers,
-    });
+    await generateArtsFromLayers(
+      attributeCount,
+      artistWalletAddress as string,
+      {
+        noseLayers,
+        headLayers,
+        mouthLayers,
+        bgLayers,
+        beardLayers,
+        eyesLayers,
+        hairLayers,
+      }
+    );
   } catch (err: any) {
     return Response.json(
       {

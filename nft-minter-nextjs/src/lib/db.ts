@@ -14,7 +14,7 @@ export async function dbConnect() {
       console.log("Connected from previous");
       return (global as any).mongoose.conn;
     } else {
-      const promise = mongoose.connect(DB, {
+      const promise = await mongoose.connect(DB, {
         autoIndex: true,
       });
 
