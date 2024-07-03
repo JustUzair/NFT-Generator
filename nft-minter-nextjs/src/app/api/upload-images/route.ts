@@ -23,6 +23,60 @@ const memoryStorage = multer.memoryStorage();
 //   },
 // });
 
+const jsonFilesToPin: Blob[] = [];
+
+const pinDirectoryToIPFS = async (folderName = "Collection") => {
+  try {
+    const folder = folderName;
+    // const json1 = { hello: "world" };
+    // const json2 = { hello: "world2" };
+    // const blob1 = new Blob([JSON.stringify(json1, null, 2)], {
+    //   type: "application/json",
+    // });
+    // const blob2 = new Blob([JSON.stringify(json2, null, 2)], {
+    //   type: "application/json",
+    // });
+
+    let files: File[] = [];
+
+    jsonFilesToPin.map((blob, index) => {
+      files.push(
+        new File([blob], `${index}.json`, { type: "application/json" })
+      );
+    });
+
+    // const files = [
+    //   new File([blob1], "hello.json", { type: "application/json" }),
+    //   new File([blob2], "hello2.json", { type: "application/json" }),
+    // ];
+
+    const data = new FormData();
+
+    Array.from(files).forEach((file) => {
+      // If you are not using `fs` you might need to specify the folder path along with the filename
+      data.append("file", file, `${folder}/${file.name}`);
+    });
+
+    const pinataMetadata = JSON.stringify({
+      name: `${folder}`,
+    });
+    data.append("pinataMetadata", pinataMetadata);
+
+    const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.PINATA_JWT_SECRET}`,
+      },
+      body: data,
+    });
+    const resData = await res.json();
+    console.log(resData);
+    return resData.IpfsHash;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 function randInt(max: number) {
   return Math.floor(Math.random() * (max + 1));
 }
@@ -321,8 +375,12 @@ async function createImage(
         ],
       };
 
-      await writeJsonFile(user, JSON.stringify(meta), NFTImagesInstance);
-
+      // await writeJsonFile(user, JSON.stringify(meta), NFTImagesInstance);
+      jsonFilesToPin.push(
+        new Blob([JSON.stringify(meta, null, 2)], {
+          type: "application/json",
+        })
+      );
       const pinJSONResult = await pinata.pinJSONToIPFS(
         {
           ...meta,
@@ -345,6 +403,10 @@ async function createImage(
         centralizedURL: `https://ipfs.io/ipfs/${pinResult.IpfsHash}`,
         // jsonFileDecentralizedURL: `ipfs://${pinJSONResult.IpfsHash}`,
         basePrice: 0.005,
+        tokenId:
+          NFTImagesInstance.nftImagesLinks.length > 0
+            ? NFTImagesInstance.nftImagesLinks.length
+            : 0,
       });
       await NFTImagesInstance.save();
       // @TODO
@@ -371,29 +433,7 @@ async function generateNFT(
   do {
     try {
       await createImage(index, user, attributeCount, layersFiles);
-      const NFTImagesInstance = await NFTImages.findOne({
-        artist: user,
-      }).populate("artist");
-      if (!NFTImagesInstance) {
-        throw new Error("NFTImagesInstance not found");
-      }
-      const pinResult = await pinata.pinFromFS(
-        await createFolderInPublicAndGetPath(`/${user}/out/`),
-        {
-          pinataMetadata: {
-            name: `${NFTImagesInstance.artist.artistWalletAddress} : NFTImages`,
-          },
-        }
-      );
 
-      // NFTImagesInstance.collectionIPFSLink = `ipfs://${pinResult.IpfsHash}`;
-      await NFTImages.updateOne(
-        { _id: NFTImagesInstance._id },
-        { $set: { collectionIPFSLink: `ipfs://${pinResult.IpfsHash}` } }
-      );
-      await NFTImagesInstance.save({
-        validateBeforeSave: false,
-      });
       index--;
     } catch (err: any) {
       console.log(err.message);
@@ -496,6 +536,31 @@ async function generateArtsFromLayers(
       console.log("generating nfts");
 
       await generateNFT(index, artist.id, attributeCount, layersFiles);
+      const NFTImagesInstance = await NFTImages.findOne({
+        artist: artist.id,
+      }).populate("artist");
+      if (!NFTImagesInstance) {
+        throw new Error("NFTImagesInstance not found");
+      }
+      // const pinResult = await pinata.pinFromFS(
+      //   await createFolderInPublicAndGetPath(`/${user}/out/`),
+      //   {
+      //     pinataMetadata: {
+      //       name: `${NFTImagesInstance.artist.artistWalletAddress} : NFTImages`,
+      //     },
+      //   }
+      // );
+      const collectionIpfsURI = await pinDirectoryToIPFS(
+        `${NFTImagesInstance.artist.artistWalletAddress}`
+      );
+      NFTImagesInstance.collectionIPFSLink = `ipfs://${collectionIpfsURI}`;
+      await NFTImages.updateOne(
+        { _id: NFTImagesInstance._id },
+        { $set: { collectionIPFSLink: `ipfs://${collectionIpfsURI}` } }
+      );
+      await NFTImagesInstance.save({
+        validateBeforeSave: false,
+      });
       // NFTs generation successful, send acknowledgement
       return Response.json(
         {

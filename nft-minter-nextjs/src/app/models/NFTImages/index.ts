@@ -12,6 +12,7 @@ const nftImagesSchema = new mongoose.Schema({
       centralizedURL: { type: String, required: true },
       jsonFileDecentralizedURL: { type: String, required: false },
       basePrice: { type: Number, required: true },
+      tokenId: { type: Number, required: true },
     },
   ],
   collectionIPFSLink: { type: String, required: false },
