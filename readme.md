@@ -1,3 +1,7 @@
+# Refer to NextJS API Backend Docs
+
+### Visit published postman link [here](https://www.postman.com/justuzair/workspace/justuzair-ughsal-nft-gen-nextjs/overview)
+
 # Pushing to github
 
 - `git add .`
