@@ -1,36 +1,24 @@
 import { getPinataClient } from "@/lib/utils";
-import multer from "multer";
-import { NextApiRequest, PageConfig } from "next";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { Readable } from "stream";
-import { Request as ExpressRequest } from "express";
 import * as nc from "next-connect";
-import fs, { mkdir, read, writeFile, writeFileSync } from "fs";
+import fs from "fs";
 import Artists from "@/app/models/Artists";
 import { dbConnect } from "@/lib/db";
 import NFTImages from "@/app/models/NFTImages";
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 import path from "path";
-const memoryStorage = multer.memoryStorage();
 
-// export const uploadImages = multer({
-//   storage: memoryStorage,
-//   fileFilter(req, file, cb) {
-//     if (!file.originalname.match(/\.(svg)$/)) {
-//       return cb(new Error("Please upload only svg image file"));
-//     }
-//     cb(null, true);
-//   },
-// });
+const MAX_GENERATION_CAP = 5;
 
 const jsonFilesToPin: Blob[] = [];
 
 const pinDirectoryToIPFS = async (folderName = "Collection") => {
   try {
-    const pinata = await getPinataClient();
-    // if (process.env.PINATA_JWT_SECRET === undefined) {
-    //   throw new Error("Please provide PINATA_JWT_SECRET");
-    // }
+    // const pinata = await getPinataClient();
+    if (process.env.PINATA_JWT_SECRET === undefined) {
+      throw new Error("Please provide PINATA_JWT_SECRET");
+    }
     const folder = folderName;
     // const json1 = { hello: "world" };
     // const json2 = { hello: "world2" };
@@ -66,20 +54,20 @@ const pinDirectoryToIPFS = async (folderName = "Collection") => {
     });
     data.append("pinataMetadata", pinataMetadata);
 
-    // const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
-    //   method: "POST",
-    //   headers: {
-    //     Authorization: `Bearer ${process.env.PINATA_JWT_SECRET}`,
-    //   },
-    //   body: data,
-    // });
-    const res = await pinata.pinFileToIPFS(data, {
-      pinataMetadata: { name: `${folder}` },
+    const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.PINATA_JWT_SECRET}`,
+      },
+      body: data,
     });
-    // const resData = await res.json();
-    // console.log(resData);
-    // return resData.IpfsHash;
-    return res.IpfsHash;
+    // const res = await pinata.pinFileToIPFS(data, {
+    //   pinataMetadata: { name: `${folder}` },
+    // });
+    const resData = await res.json();
+    console.log(resData);
+    return resData.IpfsHash;
+    // return res.IpfsHash;
   } catch (error) {
     console.log(error);
   }
@@ -190,40 +178,6 @@ async function createFolderInPublicAndGetPath(folderName: string) {
   }
 
   return newFolderPath;
-}
-
-async function writeJsonFile(
-  user: string,
-  meta: string,
-  NFTImagesInstance: any
-) {
-  try {
-    // Get the path to the public directory
-    const publicDir = path.join(process.cwd(), "public");
-
-    // Create the full path for the user's output directory
-    const userOutDir = path.join(publicDir, user, "out");
-
-    // Ensure the directory exists
-    await createFolderInPublicAndGetPath(`/${user}/out/`);
-
-    // Create the full path for the JSON file
-    const fileName = `${
-      NFTImagesInstance.nftImagesLinks.length > 0
-        ? NFTImagesInstance.nftImagesLinks.length
-        : 0
-    }.json`;
-    const filePath = path.join(userOutDir, fileName);
-
-    // Write the file
-    await fs.promises.writeFile(filePath, JSON.stringify(JSON.parse(meta)));
-
-    console.log(`File written successfully: ${filePath}`);
-    return filePath;
-  } catch (err) {
-    console.error("Error writing file:", err);
-    throw err;
-  }
 }
 
 async function createImage(
@@ -510,7 +464,7 @@ async function generateArtsFromLayers(
       // console.log(`Combinations : ${possibleCombinations}`);
 
       // NOTE - An artist can only generate 50 NFTs at a time
-      let index = Math.min(possibleCombinations - 1, 1);
+      let index = Math.min(possibleCombinations - 1, MAX_GENERATION_CAP);
       const artist = await Artists.findOne({
         artistWalletAddress,
         /*

@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, context: any) {
   try {
     await dbConnect();
     const artistWalletAddress: string = context.params["wallet-address"];
-    console.log(`context : `, context);
+    // console.log(`context : `, context);
     // console.log(`req : `, req.nextUrl.searchParams.get("name"));
     // console.log(`req : `);
 
