@@ -27,7 +27,7 @@ const SubLayout = ({ children }: Props) => {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <div className="h-full min-h-[100vw] w-full bg-black  bg-grid-white/[0.1] relative">
+          <div className="h-full min-h-[100vh] w-full bg-black  bg-grid-white/[0.1] relative">
             {/* Radial gradient for the container to give a faded look */}
             <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-black [mask-image:radial-gradient(ellipse_at_center,transparent_50%,black)]"></div>
 
