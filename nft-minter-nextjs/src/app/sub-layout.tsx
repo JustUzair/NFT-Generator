@@ -12,17 +12,18 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
 const SubLayout = ({ children }: Props) => {
   const queryClient = new QueryClient();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    setIsLoading(true);
+    setIsLoading(false);
   }, []);
-  if (!isLoading) {
+  if (isLoading) {
     return (
       <h1 className="flex items-center justify-center w-[100vw] h-[100vh] text-4xl tracking-widest bg-black text-violet-400">
         Loading...
       </h1>
     );
   }
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>

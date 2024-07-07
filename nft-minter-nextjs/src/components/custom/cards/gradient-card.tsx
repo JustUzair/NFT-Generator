@@ -32,7 +32,7 @@ export default function ArtistGradientCard({ artist }: { artist: Artist }) {
   console.log("====================================");
   return (
     <div>
-      <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-10  bg-zinc-900">
+      <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-10  bg-neutral-950">
         <Image
           src={artist.pfp.url}
           alt={artist.artistName}

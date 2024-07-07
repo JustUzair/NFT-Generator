@@ -56,7 +56,7 @@ export default function ArtistsPage() {
         ))}
       </div>
 
-      <div className="flex justify-center gap-x-10 w-full max-w-6xl mt-6">
+      <div className="flex justify-center gap-x-10 w-full max-w-6xl pb-10">
         {currentPage > 1 && (
           <GradientButton
             onClick={() => setCurrentPage(currentPage - 1)}

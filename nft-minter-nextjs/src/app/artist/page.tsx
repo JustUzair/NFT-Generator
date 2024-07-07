@@ -118,12 +118,12 @@ const ArtistsLayout = () => {
   )
     return (
       <>
-        <h1 className="tracking-widest text-center font-semibold text-4xl text-violet-200">
+        <h1 className="tracking-widest text-center font-semibold text-4xl text-purple-500">
           Artist Profile
         </h1>
         <form
           onSubmit={handleSubmit}
-          className="max-w-md mx-auto mt-8 p-6 bg-black shadow-md rounded-lg border border-gray-800"
+          className="max-w-md mx-auto mt-8 p-6 bg-black shadow-md rounded-lg border-2 border-zinc-400"
         >
           {/* <h2 className="text-2xl font-semibold mb-6 text-center text-gray-300">
               Update Artist Profile

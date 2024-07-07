@@ -19,17 +19,16 @@ const Navbar = (props: Props) => {
   return (
     <nav className="bg-zinc-900 fixed w-full z-20 top-0 start-0 border-b border-zinc-700">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <a
-          href="https://flowbite.com/"
+        <Link
+          href="/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <Image src="/mintrrs.png" width={50} alt="logo" height={50} />
           <span className="self-center text-2xl font-semibold whitespace-nowrap text-gray-300">
             Mintrrs
           </span>
-        </a>
+        </Link>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          <ConnectButton accountStatus={"address"} showBalance={true} />
           <button
             type="button"
             className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm  rounded-lg md:hidden hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-gray-200 text-gray-400 "
@@ -61,7 +60,7 @@ const Navbar = (props: Props) => {
           } items-center justify-between w-full md:flex md:w-auto md:order-1`}
           id="navbar-sticky"
         >
-          <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium  md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 ">
+          <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium lg:gap-0 gap-5 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 ">
             <li>
               <Link
                 href="/"
@@ -71,7 +70,7 @@ const Navbar = (props: Props) => {
                 Home
               </Link>
             </li>
-            <hr className="text-white opacity-20 w-[70%] text-center" />
+            <hr className="text-white opacity-20 w-[70%] text-center visible lg:hidden" />
             {/* Uncomment the following links if needed */}
             <li>
               <Link
@@ -81,7 +80,6 @@ const Navbar = (props: Props) => {
                 Artists
               </Link>
             </li>
-            <hr className="text-white opacity-20 w-[70%] text-center" />
 
             {/* <li>
               <Link
@@ -92,15 +90,23 @@ const Navbar = (props: Props) => {
               </Link>
             </li> */}
             {address && (
-              <li>
-                <Link
-                  href="/artist"
-                  className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
-                >
-                  Profile
-                </Link>
-              </li>
+              <>
+                <hr className="text-white opacity-20 w-[70%] text-center visible lg:hidden" />
+
+                <li>
+                  <Link
+                    href="/artist"
+                    className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
+                  >
+                    Profile
+                  </Link>
+                </li>
+              </>
             )}
+            <hr className="text-white opacity-20 w-[70%] text-center visible lg:hidden" />
+            <li>
+              <ConnectButton accountStatus={"address"} showBalance={true} />
+            </li>
           </ul>
         </div>
       </div>
