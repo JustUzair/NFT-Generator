@@ -15,11 +15,16 @@ contract NFTCollectionTest is Test {
     NFTCollection erc1155Collection;
 
     function setUp() public {
+        vm.deal(owner, 1000 ether);
+        vm.deal(user1, 1000 ether);
+        vm.deal(user2, 1000 ether);
+
         vm.startBroadcast(owner);
-        erc1155Collection =
-            new NFTCollection(owner, "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint", "SPRNT");
-        erc1155Collection.mint(0, owner, "");
-        erc1155Collection.mint(1, owner, "");
+        erc1155Collection = new NFTCollection(
+            owner, "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint", "SPRNT", 0.05 ether
+        );
+        erc1155Collection.mint{value: 0.05 ether}(0, owner, "");
+        erc1155Collection.mint{value: 0.05 ether}(1, owner, "");
 
         console2.log("erc1155Collection deployed at : ", address(erc1155Collection));
         vm.stopBroadcast();
@@ -37,14 +42,14 @@ contract NFTCollectionTest is Test {
     function test_MintToOwnerMultipleTimes() public {
         vm.startBroadcast(owner);
         vm.expectRevert(bytes("Already Minted"));
-        erc1155Collection.mint(0, owner, "");
+        erc1155Collection.mint{value: 0.05 ether}(0, owner, "");
         vm.stopBroadcast();
     }
 
     function test_MintToNonOwner() public {
         vm.startBroadcast(user1);
-        erc1155Collection.mint(0, user1, "");
-        erc1155Collection.mint(1, user1, "");
+        erc1155Collection.mint{value: 0.05 ether}(0, user1, "");
+        erc1155Collection.mint{value: 0.05 ether}(1, user1, "");
         vm.stopBroadcast();
         assert(erc1155Collection.balanceOf(user1, 0) == 1 && erc1155Collection.balanceOf(user1, 1) == 1);
     }
@@ -69,15 +74,39 @@ contract NFTCollectionTest is Test {
 
     function test_newTokenIdByOwner() public {
         vm.startBroadcast(owner);
-        erc1155Collection.mint(2, owner, "");
+        erc1155Collection.mint{value: 0.05 ether}(2, owner, "");
         vm.stopBroadcast();
         assert(erc1155Collection.balanceOf(owner, 2) == 1);
     }
 
     function test_newTokenIdByNonOwner() public {
         vm.startBroadcast(user1);
-        erc1155Collection.mint(2, user1, "");
+        erc1155Collection.mint{value: 0.05 ether}(2, user1, "");
         vm.stopBroadcast();
         assert(erc1155Collection.balanceOf(user1, 2) == 1);
+    }
+
+    function test_WithdrawRevenueByNonOwner() public {
+        vm.startBroadcast(user1);
+        vm.expectRevert(abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", user1));
+        erc1155Collection.withdrawRevenue();
+        vm.stopBroadcast();
+    }
+
+    function test_WithdrawRevenueByOwner() public {
+        vm.startBroadcast(owner);
+        erc1155Collection.withdrawRevenue();
+        vm.stopBroadcast();
+        vm.startBroadcast(user1);
+        erc1155Collection.mintToSender{value: 0.05 ether}(10);
+        vm.stopBroadcast();
+        vm.startBroadcast(user2);
+        erc1155Collection.mintToSender{value: 0.05 ether}(10);
+        vm.stopBroadcast();
+        uint256 withdrawAmount = erc1155Collection.getWithdrawableRevenue();
+        require(withdrawAmount == 0.1 ether, "Incorrect withdrawable revenue");
+        vm.startBroadcast(owner);
+        erc1155Collection.withdrawRevenue();
+        vm.stopBroadcast();
     }
 }

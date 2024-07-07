@@ -18,6 +18,10 @@ contract NFTCollectionFactoryTest is Test {
     NFTCollectionFactory factory;
 
     function setUp() public {
+        vm.deal(owner, 1000 ether);
+        vm.deal(user1, 1000 ether);
+        vm.deal(user2, 1000 ether);
+
         vm.startBroadcast(owner);
         factory = new NFTCollectionFactory(owner);
         console2.log("erc1155CollectionFactory deployed at : ", address(factory));
@@ -30,31 +34,45 @@ contract NFTCollectionFactoryTest is Test {
 
     function test_createCollection() public {
         vm.startBroadcast(owner);
-        factory.createCollection("ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 1", "SPRNT-1");
+        factory.createCollection(
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 1", "SPRNT-1", 0.05 ether
+        );
         vm.stopBroadcast();
     }
 
     function test_createMultipleCollections() public {
         vm.startBroadcast(owner);
-        factory.createCollection("ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 1", "SPRNT-1");
-        factory.createCollection("ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 2", "SPRNT-2");
-        factory.createCollection("ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 3", "SPRNT-3");
+        factory.createCollection(
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 1", "SPRNT-1", 0.05 ether
+        );
+        factory.createCollection(
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 2", "SPRNT-2", 0.05 ether
+        );
+        factory.createCollection(
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 3", "SPRNT-3", 0.05 ether
+        );
         vm.stopBroadcast();
     }
 
     modifier _createMultipleCollections() {
         vm.startBroadcast(owner);
-        factory.createCollection("ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 1", "SPRNT-1");
-        factory.createCollection("ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 2", "SPRNT-2");
-        factory.createCollection("ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 3", "SPRNT-3");
-        NFTCollection(factory.getUserCollections(owner)[0]).mint(0, owner, "");
-        NFTCollection(factory.getUserCollections(owner)[0]).mint(1, owner, "");
+        factory.createCollection(
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 1", "SPRNT-1", 0.05 ether
+        );
+        factory.createCollection(
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 2", "SPRNT-2", 0.05 ether
+        );
+        factory.createCollection(
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 3", "SPRNT-3", 0.05 ether
+        );
+        NFTCollection(factory.getUserCollections(owner)[0]).mint{value: 0.05 ether}(0, owner, "");
+        NFTCollection(factory.getUserCollections(owner)[0]).mint{value: 0.05 ether}(1, owner, "");
 
-        NFTCollection(factory.getUserCollections(owner)[1]).mint(0, owner, "");
-        NFTCollection(factory.getUserCollections(owner)[1]).mint(1, owner, "");
+        NFTCollection(factory.getUserCollections(owner)[1]).mint{value: 0.05 ether}(0, owner, "");
+        NFTCollection(factory.getUserCollections(owner)[1]).mint{value: 0.05 ether}(1, owner, "");
 
-        NFTCollection(factory.getUserCollections(owner)[2]).mint(0, owner, "");
-        NFTCollection(factory.getUserCollections(owner)[2]).mint(1, owner, "");
+        NFTCollection(factory.getUserCollections(owner)[2]).mint{value: 0.05 ether}(0, owner, "");
+        NFTCollection(factory.getUserCollections(owner)[2]).mint{value: 0.05 ether}(1, owner, "");
         vm.stopBroadcast();
         _;
     }
@@ -66,9 +84,15 @@ contract NFTCollectionFactoryTest is Test {
 
     function test_getAllCollections() public _createMultipleCollections {
         vm.startBroadcast(user1);
-        factory.createCollection("ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 1", "SPRNT-1");
-        factory.createCollection("ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 2", "SPRNT-2");
-        factory.createCollection("ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 3", "SPRNT-3");
+        factory.createCollection(
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 1", "SPRNT-1", 0.05 ether
+        );
+        factory.createCollection(
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 2", "SPRNT-2", 0.05 ether
+        );
+        factory.createCollection(
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint 3", "SPRNT-3", 0.05 ether
+        );
         vm.stopBroadcast();
         address[] memory collections = factory.getAllCollections();
         assert(collections.length == 6);
@@ -77,16 +101,16 @@ contract NFTCollectionFactoryTest is Test {
     function test_MintFromCollection() public _createMultipleCollections {
         address[] memory collections = factory.getUserCollections(owner);
         vm.startPrank(user1);
-        NFTCollection(collections[0]).mint(0, user1, "");
+        NFTCollection(collections[0]).mint{value: 0.05 ether}(0, user1, "");
         assert(NFTCollection(collections[0]).balanceOf(user1, 0) == 1);
     }
 
     function test_MintMultipleTimes() public _createMultipleCollections {
         address[] memory collections = factory.getUserCollections(owner);
         vm.startBroadcast(user1);
-        NFTCollection(collections[0]).mint(0, user1, "");
+        NFTCollection(collections[0]).mint{value: 0.05 ether}(0, user1, "");
         vm.expectRevert(bytes("Already Minted"));
-        NFTCollection(collections[0]).mint(0, user1, "");
+        NFTCollection(collections[0]).mint{value: 0.05 ether}(0, user1, "");
         vm.stopBroadcast();
         console2.log(NFTCollection(collections[0]).balanceOf(user1, 0));
     }
