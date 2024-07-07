@@ -27,14 +27,6 @@ interface Artist {
 
 const ArtistNFTPage = ({ params }: Params) => {
   const artistAddress = params["artist-wallet-address"].toString() as string;
-  if (
-    artistAddress == null ||
-    artistAddress == "" ||
-    artistAddress.length != 42
-  ) {
-    return <Error message="Invalid Artist Address" />;
-  }
-
   const { address, chainId, chain } = useAccount();
   const [artistData, setArtistData] = React.useState<Artist>({
     _id: "",
@@ -49,11 +41,20 @@ const ArtistNFTPage = ({ params }: Params) => {
       url: "",
     },
   });
+
+  if (
+    artistAddress == null ||
+    artistAddress == "" ||
+    artistAddress.length != 42
+  ) {
+    return <Error message="Invalid Artist Address" />;
+  }
+
   async function getData() {
     const artistData = await getArtistByWalletAddress(artistAddress);
-    console.log("====================================");
-    console.log(artistData);
-    console.log("====================================");
+    // console.log("====================================");
+    // console.log(artistData);
+    // console.log("====================================");
     setArtistData(artistData);
   }
   useEffect(() => {
