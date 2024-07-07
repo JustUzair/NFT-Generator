@@ -118,7 +118,7 @@ const ArtistsLayout = () => {
   )
     return (
       <>
-        <h1 className="tracking-widest text-center font-semibold text-4xl text-violet-400">
+        <h1 className="tracking-widest text-center font-semibold text-4xl text-violet-200">
           Artist Profile
         </h1>
         <form

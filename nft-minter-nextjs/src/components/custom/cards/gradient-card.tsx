@@ -40,8 +40,16 @@ export default function ArtistGradientCard({ artist }: { artist: Artist }) {
           width="100"
           className="object-contain rounded-full mx-auto"
         />
-        <p className="text-base sm:text-xl mt-4 mb-2 text-neutral-200">
-          {artist.artistName}
+        <p className="text-base sm:text-xl mt-4 mb-2 text-neutral-200 text-center font-extralight tracking-tight">
+          Creator Tag :{" "}
+          <span
+            className="cursor-pointer hover:underline transition-all duration-150 !tracking-widest !font-semibold"
+            onClick={() => {
+              router.push(`/artists/${artist.artistWalletAddress}`);
+            }}
+          >
+            {artist.artistName}
+          </span>
         </p>
 
         {/* <p className="text-sm  text-neutral-400">

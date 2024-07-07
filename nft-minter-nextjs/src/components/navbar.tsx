@@ -1,13 +1,23 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useAccount } from "wagmi";
+
 type Props = {};
 
 const Navbar = (props: Props) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleMenuToggle = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const { address } = useAccount();
+
   return (
-    <nav className="bg-white bg-zinc-900 fixed w-full z-20 top-0 start-0 border-b  border-zinc-700">
+    <nav className="bg-zinc-900 fixed w-full z-20 top-0 start-0 border-b border-zinc-700">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a
           href="https://flowbite.com/"
@@ -21,11 +31,11 @@ const Navbar = (props: Props) => {
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           <ConnectButton accountStatus={"address"} showBalance={true} />
           <button
-            data-collapse-toggle="navbar-sticky"
             type="button"
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-gray-200 text-gray-400 hover:bg-zinc-700 focus:ring-gray-600"
+            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm  rounded-lg md:hidden hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-gray-200 text-gray-400 "
             aria-controls="navbar-sticky"
-            aria-expanded="false"
+            aria-expanded={isMenuOpen}
+            onClick={handleMenuToggle}
           >
             <span className="sr-only">Open main menu</span>
             <svg
@@ -46,43 +56,51 @@ const Navbar = (props: Props) => {
           </button>
         </div>
         <div
-          className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
+          className={`${
+            isMenuOpen ? "block" : "hidden"
+          } items-center justify-between w-full md:flex md:w-auto md:order-1`}
           id="navbar-sticky"
         >
-          <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border  md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 ">
+          <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium  md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 ">
             <li>
               <Link
                 href="/"
-                className="block py-2 px-3 rounded   text-gray-300 hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
+                className="block py-2 px-3 rounded text-gray-300 hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
                 aria-current="page"
               >
                 Home
               </Link>
             </li>
+            <hr className="text-white opacity-20 w-[70%] text-center" />
+            {/* Uncomment the following links if needed */}
+            <li>
+              <Link
+                href="/artists"
+                className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
+              >
+                Artists
+              </Link>
+            </li>
+            <hr className="text-white opacity-20 w-[70%] text-center" />
+
             {/* <li>
               <Link
                 href="#"
-                className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-100 md:hover:bg-transparent  text-gray-300 hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
-              >
-                About
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="#"
-                className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-100 md:hover:bg-transparent  text-gray-300 hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
+                className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
               >
                 Services
               </Link>
             </li> */}
-            <li>
-              <Link
-                href="/artist"
-                className="block py-2 px-3 text-gray-300 rounded  hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
-              >
-                Profile
-              </Link>
-            </li>
+            {address && (
+              <li>
+                <Link
+                  href="/artist"
+                  className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
+                >
+                  Profile
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       </div>
