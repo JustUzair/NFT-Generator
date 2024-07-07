@@ -20,15 +20,6 @@ const pinDirectoryToIPFS = async (folderName = "Collection") => {
       throw new Error("Please provide PINATA_JWT_SECRET");
     }
     const folder = folderName;
-    // const json1 = { hello: "world" };
-    // const json2 = { hello: "world2" };
-    // const blob1 = new Blob([JSON.stringify(json1, null, 2)], {
-    //   type: "application/json",
-    // });
-    // const blob2 = new Blob([JSON.stringify(json2, null, 2)], {
-    //   type: "application/json",
-    // });
-
     let files: File[] = [];
 
     jsonFilesToPin.map((blob, index) => {
@@ -82,11 +73,11 @@ function randElement(arr: any) {
 
 function getRandomName() {
   const adjectives =
-    "fired cool chad gigachad bozo normy nerd nerdy little jazzy funny creepy lil dusty fiery trashy tubular nasty jacked swol buff ferocious firey flamin agnostic artificial bloody crazy cringey crusty dirty eccentric glutinous harry juicy simple stylish awesome creepy corny freaky shady sketchy lame sloppy hot intrepid juxtaposed killer ludicrous mangy pastey ragin rusty rockin sinful shameful stupid sterile ugly vascular wild young old zealous flamboyant super sly shifty trippy fried injured depressed anxious clinical".split(
+    "fired cool chad gigachad bozo normy nerd nerdy fruity creampuff sassy zazzly little jazzy funny creepy lil dusty fiery trashy tubular nasty jacked swol buff ferocious firey flamin agnostic artificial bloody crazy cringey crusty dirty eccentric glutinous harry juicy simple stylish awesome creepy corny freaky shady sketchy lame sloppy hot intrepid juxtaposed killer ludicrous mangy pastey ragin rusty rockin sinful shameful stupid sterile ugly vascular wild young old zealous flamboyant super sly shifty trippy fried injured depressed anxious clinical".split(
       " "
     );
   const names =
-    "aaron bart chad dale earl fred grady harry ivan jeff joe kyle lester steve tanner lucifer todd mitch hunter mike arnold norbert olaf plop quinten randy saul balzac tevin jack ulysses vince will xavier yusuf zack roger raheem rex dustin seth bronson dennis".split(
+    "aaron bart dylan mike michael joe jonah jonas chad dale earl fred grady harry ivan jeff joe kyle lester steve tanner lucifer todd mitch hunter mike arnold norbert olaf plop quinten randy saul balzac tevin jack ulysses vince will xavier yusuf zack roger raheem rex dustin seth bronson dennis".split(
       " "
     );
 
