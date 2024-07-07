@@ -41,15 +41,6 @@ const ArtistNFTPage = ({ params }: Params) => {
       url: "",
     },
   });
-
-  if (
-    artistAddress == null ||
-    artistAddress == "" ||
-    artistAddress.length != 42
-  ) {
-    return <Error message="Invalid Artist Address" />;
-  }
-
   async function getData() {
     const artistData = await getArtistByWalletAddress(artistAddress);
     // console.log("====================================");
@@ -60,6 +51,14 @@ const ArtistNFTPage = ({ params }: Params) => {
   useEffect(() => {
     getData();
   }, []);
+
+  if (
+    artistAddress == null ||
+    artistAddress == "" ||
+    artistAddress.length != 42
+  ) {
+    return <Error message="Invalid Artist Address" />;
+  }
 
   //   @ts-ignore
   if (chainId && !supportedChains.includes(chainId)) {
