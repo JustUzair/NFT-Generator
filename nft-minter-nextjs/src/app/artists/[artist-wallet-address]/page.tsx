@@ -1,7 +1,6 @@
 "use client";
 import { supportedChains } from "@/constants/config";
 import { getArtistByWalletAddress } from "@/lib/api-function-utils";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
@@ -25,7 +24,7 @@ interface Artist {
   };
 }
 
-const ArtistNFTPage = ({ params }: Params) => {
+const ArtistNFTPage = ({ params }: any) => {
   const artistAddress = params["artist-wallet-address"].toString() as string;
   const { address, chainId, chain } = useAccount();
   const [artistData, setArtistData] = React.useState<Artist>({
