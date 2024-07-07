@@ -1,34 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "../../../lib/db";
 import Artists from "../../models/Artists";
+import NFTImages from "@/app/models/NFTImages";
+import mongoose, { ObjectId } from "mongoose";
+
+interface IArtistCollection {
+  chainId: number;
+  contractAddress: string;
+}
 
 export async function GET(req: NextRequest) {
   try {
     await dbConnect();
 
-    const artists = await Artists.find();
+    const page = parseInt(req.nextUrl.searchParams.get("page") || "1");
+    const limit = parseInt(req.nextUrl.searchParams.get("limit") || "10");
+    const skip = (page - 1) * limit;
+
+    // console.log(
+    //   "Total documents:",
+    //   await Artists.countDocuments({ active: true })
+    // );
+    // console.log("Page:", page);
+    // console.log("Limit:", limit);
+    // console.log("Skip:", skip);
+    // console.log(page, limit);
+
+    const artists = await Artists.find({ active: true })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Artists.countDocuments({ active: true });
 
     return NextResponse.json(
       {
-        message: "success",
-        artists,
+        artists: artists,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
       },
       {
         status: 200,
       }
     );
-  } catch (err) {
-    // @ts-ignore
-    console.log("🔴", err.message);
+  } catch (error) {
+    console.log((error as any).message);
 
     return NextResponse.json(
+      { error: "Unable to fetch artists and arts" },
       {
-        message: "error",
-        // @ts-ignore
-        errorData: `🔴 🔴 ${err.message}`,
-      },
-      {
-        status: 400,
+        status: 500,
       }
     );
   }
@@ -42,25 +62,25 @@ export async function POST(req: NextRequest) {
     const artistWalletAddress = data.get(
       "artistWalletAddress"
     ) as unknown as string;
-    const collectionsAddresses = data.get(
-      "collectionsAddresses"
-    ) as unknown as string;
+    const collectionData = data.get(
+      "nftCollection"
+    ) as unknown as IArtistCollection;
 
     // console.log(data);
 
-    console.log(artistName, artistWalletAddress, collectionsAddresses);
+    console.log(artistName, artistWalletAddress, collectionData);
     // Save the collection details to MongoDB
-    const collection = new Artists({
+    const newArtist = new Artists({
       artistName: artistName,
       artistWalletAddress: artistWalletAddress,
-      collectionsAddresses: collectionsAddresses,
+      nftCollection: collectionData,
     });
-    await collection.save();
+    await newArtist.save();
 
     return NextResponse.json(
       {
         message: "Artist saved to DB!",
-        collection,
+        artist: newArtist,
       },
       {
         status: 200,

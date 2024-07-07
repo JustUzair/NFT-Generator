@@ -1,10 +1,28 @@
 import mongoose, { Model, Models } from "mongoose";
-const Schema = mongoose.Schema;
 
 const artistSchema = new mongoose.Schema({
   artistName: { type: String, required: true },
   artistWalletAddress: { type: String, required: true, unique: true },
-  collectionsAddresses: [{ type: String, required: true }],
+  nftCollection: {
+    chainId: {
+      type: Number,
+      default: 80002,
+    },
+    contractAddress: {
+      type: String,
+      default: "",
+    },
+  },
+  pfp: {
+    decentralizedURL: {
+      type: String,
+    },
+    url: {
+      type: String,
+      required: true,
+      default: "/mintrrs-logo-bg.jpeg",
+    },
+  },
   active: {
     type: Boolean,
     default: true,

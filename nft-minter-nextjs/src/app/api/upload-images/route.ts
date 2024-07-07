@@ -1,7 +1,6 @@
-import { getPinataClient } from "@/lib/utils";
+import { getPinataClient } from "@/lib/api-utils";
 import { NextResponse } from "next/server";
 import { Readable } from "stream";
-import * as nc from "next-connect";
 import fs from "fs";
 import Artists from "@/app/models/Artists";
 import { dbConnect } from "@/lib/db";
@@ -303,9 +302,6 @@ async function createImage(
       const pinResult = await pinata.pinFileToIPFS(fileToUpload, {
         pinataMetadata: {
           name: `${user} : ${name}`,
-        },
-        pinataOptions: {
-          cidVersion: 0,
         },
       });
 
