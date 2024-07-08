@@ -1,8 +1,6 @@
 "use client";
 import GradientButton from "@/components/custom/buttons/gradient";
 import GradientCard from "@/components/custom/cards/gradient-card";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { useState, useEffect } from "react";
 
 interface IArtistCollection {
@@ -22,7 +20,7 @@ interface Artist {
 }
 
 export default function ArtistsPage() {
-  const [artists, setArtists] = useState([]);
+  const [artists, setArtists] = useState<Artist[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -32,7 +30,7 @@ export default function ArtistsPage() {
 
   const fetchArtists = async (page: number) => {
     try {
-      const res = await fetch(`/api/artists?page=${page}&limit=9`);
+      const res = await fetch(`/api/artists?page=${page}&limit=12`);
       const data = await res.json();
       setArtists(data.artists);
       setTotalPages(data.totalPages);
@@ -40,18 +38,35 @@ export default function ArtistsPage() {
       console.error("Error fetching artists:", error);
     }
   };
-  console.log("====================================");
-  console.log(artists);
-  console.log("====================================");
+
+  const getCardSize = (index: number) => {
+    const sizes = [
+      "row-span-[1.5] col-span-1",
+      "row-span-1 col-span-2",
+      "row-span-[1.5] col-span-2",
+      // "row-span-[1.5] col-span-2",
+      // "row-span-2 col-span-1",
+
+      // "col-span-1 row-span-2",
+      // "col-span-1 row-span-1",
+      // "col-span-2 row-span-2",
+      // "col-span-1 row-span-1",
+      // "col-span-1 row-span-2",
+      // "col-span-2 row-span-1",
+      // "col-span-1 row-span-1",
+      // "col-span-1 row-span-1",
+      // "col-span-1 row-span-1",
+      // "col-span-1 row-span-1",
+    ];
+    return sizes[index % sizes.length];
+  };
+
   return (
     <div className="max-w-[85%] mx-auto">
-      <div className="text-white lg:grid lg:grid-cols-3 gap-x-32 gap-y-10 flex items-center justify-center flex-wrap pb-20">
-        {artists.map((artist: Artist) => (
-          <div key={artist._id}>
-            {/* <Image src={artist.pfp.url} alt="" width={100} height={100} />
-            <h2>{artist?.artistName}</h2>
-            <p>Wallet Address: {artist.artistWalletAddress}</p> */}
-            <GradientCard artist={artist} />
+      <div className="grid grid-cols-3 grid-rows-auto w-full gap-10 pb-20 mx-auto">
+        {artists.map((artist, index) => (
+          <div key={artist._id} className={`${getCardSize(index)}`}>
+            <GradientCard artist={artist} className="" />
           </div>
         ))}
       </div>

@@ -8,6 +8,7 @@ import ShimmerButton from "../buttons/shimmer-button";
 import { useRouter } from "next/navigation";
 import GradientButton from "../buttons/gradient";
 import { useAccount } from "wagmi";
+import { cn } from "@/lib/utils";
 
 interface IArtistCollection {
   chainId: number;
@@ -24,15 +25,24 @@ interface Artist {
     url: string;
   };
 }
-export default function ArtistGradientCard({ artist }: { artist: Artist }) {
+export default function ArtistGradientCard({
+  artist,
+  className,
+}: {
+  artist: Artist;
+  className: string;
+}) {
   const router = useRouter();
   const { chain } = useAccount();
-  console.log("====================================");
-  console.log(chain?.blockExplorers?.default.url);
-  console.log("====================================");
+  // console.log("====================================");
+  // console.log(chain?.blockExplorers?.default.url);
+  // console.log("====================================");
   return (
     <div>
-      <BackgroundGradient className="rounded-[22px] max-w-sm p-4 sm:p-10  bg-neutral-950">
+      <BackgroundGradient
+        className={cn("rounded-[22px] p-4 sm:p-10  bg-neutral-950 ")}
+        containerClassName={className}
+      >
         <Image
           src={artist.pfp.url}
           alt={artist.artistName}
@@ -53,8 +63,8 @@ export default function ArtistGradientCard({ artist }: { artist: Artist }) {
         </p>
 
         {/* <p className="text-sm  text-neutral-400">
-          {artist.artistWalletAddress}
-        </p> */}
+            {artist.artistWalletAddress}
+          </p> */}
         {artist.nftCollection &&
           artist.nftCollection.contractAddress != null &&
           artist.nftCollection.contractAddress != "" &&

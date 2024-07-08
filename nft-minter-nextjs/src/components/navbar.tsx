@@ -70,7 +70,7 @@ const Navbar = (props: Props) => {
                 Home
               </Link>
             </li>
-            <hr className="text-white opacity-20 w-[70%] text-center visible lg:hidden" />
+            <hr className="text-white opacity-20 w-[70%] text-center visible md:hidden lg:hidden" />
             {/* Uncomment the following links if needed */}
             <li>
               <Link
@@ -91,7 +91,7 @@ const Navbar = (props: Props) => {
             </li> */}
             {address && (
               <>
-                <hr className="text-white opacity-20 w-[70%] text-center visible lg:hidden" />
+                <hr className="text-white opacity-20 w-[70%] text-center visible md:hidden lg:hidden" />
 
                 <li>
                   <Link
@@ -103,7 +103,7 @@ const Navbar = (props: Props) => {
                 </li>
               </>
             )}
-            <hr className="text-white opacity-20 w-[70%] text-center visible lg:hidden" />
+            <hr className="text-white opacity-20 w-[70%] text-center visible md:hidden lg:hidden" />
             <li>
               <ConnectButton accountStatus={"address"} showBalance={true} />
             </li>
