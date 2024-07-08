@@ -3,11 +3,7 @@ import { dbConnect } from "../../../lib/db";
 import Artists from "../../models/Artists";
 import NFTImages from "@/app/models/NFTImages";
 import mongoose, { ObjectId } from "mongoose";
-
-interface IArtistCollection {
-  chainId: number;
-  contractAddress: string;
-}
+import { IArtistCollection } from "@/lib/interfaces";
 
 export async function GET(req: NextRequest) {
   try {

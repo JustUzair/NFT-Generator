@@ -1,25 +1,10 @@
 "use client";
 import GradientButton from "@/components/custom/buttons/gradient";
-import GradientCard from "@/components/custom/cards/gradient-card";
+import GradientArtistCard from "@/components/custom/cards/gradient-artist-card";
+import { Artist } from "@/lib/interfaces";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-
-interface IArtistCollection {
-  chainId: number;
-  contractAddress: string;
-}
-
-interface Artist {
-  _id: string;
-  artistName: string;
-  artistWalletAddress: string;
-  nftCollection: IArtistCollection;
-  pfp: {
-    decentralizedURL: string;
-    url: string;
-  };
-}
 
 export default function ArtistsPage({ params }: { params: { page: string } }) {
   const router = useRouter();
@@ -72,7 +57,10 @@ export default function ArtistsPage({ params }: { params: { page: string } }) {
             key={artist._id}
             className={`${getCardSize(index)} rounded-3xl w-[100%] h-[100%]`}
           >
-            <GradientCard artist={artist} className="!h-[100%] !w-[100%]" />
+            <GradientArtistCard
+              artist={artist}
+              className="!h-[100%] !w-[100%]"
+            />
           </div>
         ))}
       </div>

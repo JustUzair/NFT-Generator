@@ -1,79 +1,85 @@
 import Artists from "@/app/models/Artists";
 import NFTImages from "@/app/models/NFTImages";
 import { dbConnect } from "@/lib/db";
+import { PaginatedResponse, PaginationInfo } from "@/lib/interfaces";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest, context: any) {
-  // URL Structure - http://localhost:3000/api/artists/<wallet-address>
   try {
     await dbConnect();
     const artistWalletAddress: string = context.params["wallet-address"];
-    console.log(`context : `, context);
-    // console.log(`req : `, req.nextUrl.searchParams.get("name"));
-    // console.log(`req : `);
 
-    console.log(`wallet - address : `, artistWalletAddress);
+    const page = parseInt(req.nextUrl.searchParams.get("page") || "1");
+    const limit = parseInt(req.nextUrl.searchParams.get("limit") || "10");
 
-    const artist = await Artists.findOne({
-      artistWalletAddress,
-      /*
-        above line equals to 
-  
-        artistWalletAddress : artistWalletAddress, 
-        for example: artistWalletAddress: 0xA72e562f24515C060F36A2DA07e0442899D39d2c
-        */
-    });
+    const artist = await Artists.findOne({ artistWalletAddress });
     if (!artist) {
       return NextResponse.json(
         {
           message: "error",
-          // @ts-ignore
-          errorData: `No artist found with the wallet address`,
+          errorData: "No artist found with the wallet address",
         },
-        {
-          status: 404,
-        }
+        { status: 404 }
       );
     }
-    // console.log(artist);
+
     const artistImages = await NFTImages.findOne({
       artist: artist._id,
     }).populate("artist");
 
     if (!artistImages) {
       return NextResponse.json(
-        {
-          message: "error",
-          errorData: `No NFTs found for the artist`,
-        },
-        {
-          status: 404,
-        }
+        { message: "error", errorData: "No NFTs found for the artist" },
+        { status: 404 }
       );
     }
-    return NextResponse.json(
-      {
-        message: "success",
-        artistData: artistImages,
-      },
-      {
-        status: 200,
-      }
+
+    // Paginate the nftImagesLinks array
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const paginatedNFTImages = artistImages.nftImagesLinks.slice(
+      startIndex,
+      endIndex
     );
+
+    const totalItems = artistImages.nftImagesLinks.length;
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const paginationInfo: PaginationInfo = {
+      currentPage: page,
+      totalPages: totalPages,
+      totalItems: totalItems,
+      itemsPerPage: limit,
+    };
+
+    if (endIndex < totalItems) {
+      paginationInfo.nextPage = page + 1;
+    }
+
+    if (startIndex > 0) {
+      paginationInfo.previousPage = page - 1;
+    }
+
+    const paginatedResponse: PaginatedResponse = {
+      message: "success",
+      artistNFTData: {
+        ...artistImages.toObject(),
+        nftImagesLinks: paginatedNFTImages,
+      },
+      pagination: paginationInfo,
+    };
+
+    return NextResponse.json(paginatedResponse, { status: 200 });
   } catch (err) {
     console.log("🔴", err);
-    // @ts-ignore
-    console.log("🔴", err.message);
-
     return NextResponse.json(
       {
         message: "error",
-        // @ts-ignore
-        errorData: `🔴 🔴 ${err.message}`,
+        errorData: `🔴 🔴 ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`,
       },
-      {
-        status: 400,
-      }
+      { status: 400 }
     );
   }
 }

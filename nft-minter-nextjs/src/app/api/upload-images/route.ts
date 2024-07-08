@@ -7,6 +7,11 @@ import { dbConnect } from "@/lib/db";
 import NFTImages from "@/app/models/NFTImages";
 import mongoose from "mongoose";
 import path from "path";
+import {
+  AttributeProps,
+  FileTypeProps,
+  LayerFilesProps,
+} from "@/lib/interfaces";
 
 const MAX_GENERATION_CAP = 5;
 
@@ -92,15 +97,6 @@ function getRandomName() {
   }
 }
 
-interface AttributeProps {
-  bg: number;
-  hair: number;
-  eyes: number;
-  nose: number;
-  mouth: number;
-  beard: number;
-  head: number;
-}
 const takenNames: any = {};
 const takenFaces: any = {};
 const template = `
@@ -114,10 +110,6 @@ const template = `
         <!-- beard -->
     </svg>
 `;
-
-interface FileTypeProps {
-  type: "bg" | "head" | "hair" | "eyes" | "nose" | "mouth" | "beard";
-}
 
 async function getLayer(
   layersFiles: LayerFilesProps,
@@ -383,15 +375,7 @@ async function generateNFT(
   } while (index >= 0);
   //   console.log(JSON.stringify(takenNames)); // prints the taken names, type = object
 }
-interface LayerFilesProps {
-  bgLayers: File[];
-  headLayers: File[];
-  hairLayers: File[];
-  eyesLayers: File[];
-  noseLayers: File[];
-  mouthLayers: File[];
-  beardLayers: File[];
-}
+
 async function generateArtsFromLayers(
   attributeCount: AttributeProps,
   artistWalletAddress: string,

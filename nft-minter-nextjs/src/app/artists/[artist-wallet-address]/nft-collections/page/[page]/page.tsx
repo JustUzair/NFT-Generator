@@ -4,27 +4,12 @@
 import { supportedChains } from "@/constants/config";
 import { getArtistByWalletAddress } from "@/lib/api-function-utils";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 import Error from "@/components/errors/error";
 import Warning from "@/components/errors/warning";
-
-interface IArtistCollection {
-  chainId: number;
-  contractAddress: string;
-}
-
-interface Artist {
-  _id: string;
-  artistName: string;
-  artistWalletAddress: string;
-  nftCollection: IArtistCollection;
-  pfp: {
-    decentralizedURL: string;
-    url: string;
-  };
-}
+import { Artist, ArtistNFTData } from "@/lib/interfaces";
 
 const ArtistNFTPage = ({
   params,
@@ -51,6 +36,9 @@ const ArtistNFTPage = ({
       url: "",
     },
   });
+  const [artistNFTData, setArtistNFTData] = useState<ArtistNFTData | null>(
+    null
+  );
   async function getData() {
     const artistData = await getArtistByWalletAddress(artistAddress);
     // console.log("====================================");
@@ -61,6 +49,25 @@ const ArtistNFTPage = ({
   useEffect(() => {
     getData();
   }, []);
+
+  useEffect(() => {
+    if (address) fetchArtistsWithNFT(currentPage);
+  }, [currentPage, address]);
+
+  const fetchArtistsWithNFT = async (page: number) => {
+    try {
+      const res = await fetch(`/api/nfts/${address}?page=${page}&limit=12`);
+      const data = await res.json();
+      setArtistNFTData(data.artistNFTData);
+      setTotalPages(data.pagination.totalPages);
+      console.log("====================================");
+      console.log(data);
+      console.log("====================================");
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+      toast.error("Error fetching artists");
+    }
+  };
 
   if (
     artistAddress == null ||

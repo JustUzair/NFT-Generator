@@ -8,24 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supportedChains } from "@/constants/config";
 import { getArtistByWalletAddress } from "@/lib/api-function-utils";
+import { Artist } from "@/lib/interfaces";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 
-interface ArtistData {
-  artistName: string;
-  artistWalletAddress: string;
-  pfp: {
-    decentralizedURL: string;
-    url: string;
-  };
-  // Add other fields as needed
-}
-
 const ArtistsLayout = () => {
   const { address, chainId, chain } = useAccount();
-  const [artistData, setArtistData] = useState<ArtistData | null>(null);
+  const [artistData, setArtistData] = useState<Artist | null>(null);
   const [pfpImage, setPfpImage] = useState<File | null>(null);
   const [updatedArtistName, setUpdatedArtistName] = useState<string>(
     artistData?.artistName || ""
@@ -35,7 +26,7 @@ const ArtistsLayout = () => {
   async function populateArtistData(address: string) {
     setArtistData(await getArtistByWalletAddress(address));
     setUpdatedArtistName(
-      ((await getArtistByWalletAddress(address)) as ArtistData).artistName
+      ((await getArtistByWalletAddress(address)) as Artist).artistName
     );
   }
 

@@ -9,22 +9,7 @@ import { useRouter } from "next/navigation";
 import GradientButton from "../buttons/gradient";
 import { useAccount } from "wagmi";
 import { cn } from "@/lib/utils";
-
-interface IArtistCollection {
-  chainId: number;
-  contractAddress: string;
-}
-
-interface Artist {
-  _id: string;
-  artistName: string;
-  artistWalletAddress: string;
-  nftCollection: IArtistCollection;
-  pfp: {
-    decentralizedURL: string;
-    url: string;
-  };
-}
+import { Artist } from "@/lib/interfaces";
 
 export default function ArtistGradientCard({
   artist,
