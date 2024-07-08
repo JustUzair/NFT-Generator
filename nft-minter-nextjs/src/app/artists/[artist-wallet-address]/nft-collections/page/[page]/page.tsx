@@ -1,8 +1,10 @@
 "use client";
+
+// TODO : create a paginated api url for fetching artist nft collections
 import { supportedChains } from "@/constants/config";
 import { getArtistByWalletAddress } from "@/lib/api-function-utils";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 import Error from "@/components/errors/error";
@@ -24,10 +26,19 @@ interface Artist {
   };
 }
 
-const ArtistNFTPage = ({ params }: any) => {
+const ArtistNFTPage = ({
+  params,
+}: {
+  params: { "artist-wallet-address": string; page: string };
+}) => {
+  // console.log("====================================");
+  // console.log("Artist wallet address \n", params);
+  // console.log("====================================");
   const artistAddress = params["artist-wallet-address"].toString() as string;
   const { address, chainId, chain } = useAccount();
-  const [artistData, setArtistData] = React.useState<Artist>({
+  const currentPage = parseInt(params.page, 10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [artistData, setArtistData] = useState<Artist>({
     _id: "",
     artistName: "",
     artistWalletAddress: "",
@@ -94,8 +105,7 @@ const ArtistNFTPage = ({ params }: any) => {
     artistData.nftCollection.contractAddress == "" ||
     artistData.nftCollection.contractAddress.length != 42
   ) {
-    return <Error message="No Colletion has been deployed by th artist" />;
-  }
-  return <div className="mt-32">Aritst</div>;
+    return <Error message="No Collection has been deployed by th artist" />;
+  } else return <div className="mt-32">Aritst</div>;
 };
 export default ArtistNFTPage;

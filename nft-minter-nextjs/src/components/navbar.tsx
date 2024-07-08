@@ -74,7 +74,7 @@ const Navbar = (props: Props) => {
             {/* Uncomment the following links if needed */}
             <li>
               <Link
-                href="/artists"
+                href="/artists/page/1"
                 className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
               >
                 Artists
