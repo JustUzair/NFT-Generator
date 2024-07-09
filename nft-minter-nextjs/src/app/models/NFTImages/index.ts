@@ -8,6 +8,8 @@ const nftImagesSchema = new mongoose.Schema({
   },
   nftImagesLinks: [
     {
+      name: { type: String, required: true },
+      description: { type: String, required: true },
       decentralizedURL: { type: String, required: true },
       centralizedURL: { type: String, required: true },
       jsonFileDecentralizedURL: { type: String, required: false },

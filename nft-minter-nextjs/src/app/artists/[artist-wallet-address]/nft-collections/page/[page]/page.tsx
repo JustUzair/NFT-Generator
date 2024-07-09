@@ -10,15 +10,17 @@ import { useAccount } from "wagmi";
 import Error from "@/components/errors/error";
 import Warning from "@/components/errors/warning";
 import { Artist, ArtistNFTData } from "@/lib/interfaces";
+import ShinyNFTCard from "@/components/custom/cards/shiny-nft-card";
+import ShimmerButton from "@/components/custom/buttons/shimmer-button";
+import GradientButton from "@/components/custom/buttons/gradient";
+import NFTCollectionForm from "./_components/nft-collection-form";
 
 const ArtistNFTPage = ({
   params,
 }: {
   params: { "artist-wallet-address": string; page: string };
 }) => {
-  // console.log("====================================");
-  // console.log("Artist wallet address \n", params);
-  // console.log("====================================");
+  const router = useRouter();
   const artistAddress = params["artist-wallet-address"].toString() as string;
   const { address, chainId, chain } = useAccount();
   const currentPage = parseInt(params.page, 10);
@@ -54,9 +56,16 @@ const ArtistNFTPage = ({
     if (address) fetchArtistsWithNFT(currentPage);
   }, [currentPage, address]);
 
+  useEffect(() => {
+    console.log("====================================");
+    console.log(`artistNFTData\n`, artistNFTData);
+    console.log("====================================");
+  }, [artistNFTData]);
   const fetchArtistsWithNFT = async (page: number) => {
     try {
-      const res = await fetch(`/api/nfts/${address}?page=${page}&limit=12`);
+      const res = await fetch(
+        `/api/nfts/${artistAddress}?page=${page}&limit=12`
+      );
       const data = await res.json();
       setArtistNFTData(data.artistNFTData);
       setTotalPages(data.pagination.totalPages);
@@ -69,50 +78,120 @@ const ArtistNFTPage = ({
     }
   };
 
-  if (
-    artistAddress == null ||
-    artistAddress == "" ||
-    artistAddress.length != 42
-  ) {
-    return <Error message="Invalid Artist Address" />;
-  }
+  // if (
+  //   artistAddress == null ||
+  //   artistAddress == "" ||
+  //   artistAddress.length != 42
+  // ) {
+  //   return <Error message="Invalid Artist Address" />;
+  // }
 
-  //   @ts-ignore
-  if (chainId && !supportedChains.includes(chainId)) {
-    return <Error message="Please connect to the supported network" />;
-  }
-  if (!chain || !chainId) {
-    toast.warning(
-      "No Network Connected, Please connect to a network and try again. "
-    );
-    return (
-      <div className="mt-30">
-        <Warning message="No Network Connected, Please connect to a network and try again. " />
-      </div>
-    );
-  }
-  if (
-    !artistData ||
-    (artistData && !(artistData.artistWalletAddress == address))
-  ) {
-    // console.log("====================================");
-    // console.log("here");
-    // console.log("====================================");
-    return (
-      <div className="mt-30">
-        <Error message="You are probably not registered as an artist!" />
-      </div>
-    );
-  }
+  // //   @ts-ignore
+  // if (chainId && !supportedChains.includes(chainId)) {
+  //   return <Error message="Please connect to the supported network" />;
+  // }
+  // if (!chain || !chainId) {
+  //   toast.warning(
+  //     "No Network Connected, Please connect to a network and try again. "
+  //   );
+  //   return (
+  //     <div className="mt-30">
+  //       <Warning message="No Network Connected, Please connect to a network and try again. " />
+  //     </div>
+  //   );
+  // }
+  // if (
+  //   !artistData ||
+  //   (artistData && !(artistData.artistWalletAddress == address))
+  // ) {
+  //   // console.log("====================================");
+  //   // console.log("here");
+  //   // console.log("====================================");
+  //   return (
+  //     <div className="mt-30">
+  //       <Error message="You are probably not registered as an artist!" />
+  //     </div>
+  //   );
+  // }
 
-  if (
-    !artistData.nftCollection ||
-    (artistData.nftCollection &&
-      artistData.nftCollection.contractAddress == null) ||
-    artistData.nftCollection.contractAddress == "" ||
-    artistData.nftCollection.contractAddress.length != 42
-  ) {
-    return <Error message="No Collection has been deployed by th artist" />;
-  } else return <div className="mt-32">Aritst</div>;
+  // if (
+  //   !artistData.nftCollection ||
+  //   (artistData.nftCollection &&
+  //     artistData.nftCollection.contractAddress == null) ||
+  //   artistData.nftCollection.contractAddress == "" ||
+  //   artistData.nftCollection.contractAddress.length != 42
+  // ) {
+  //   return <Error message="No Collection has been deployed by th artist" />;
+  // } else
+  return (
+    <div className="mt-20 max-w-[85%] mx-auto">
+      <h1 className="tracking-widest text-center font-semibold text-4xl text-purple-500">
+        {((artistData && !artistData.nftCollection.contractAddress) ||
+          artistData.nftCollection.contractAddress.length != 42) &&
+          artistData.artistWalletAddress === address && (
+            <div className="z-[9999999] border-2 border-white bg-purple-700 rounded-xl lg:px-10 lg:py-4 p-2 text-white tracking-widest text-xl flex items-center justify-around lg:w-[60%] flex-wrap w-[100%] mx-auto">
+              <h1>Your collection is not on chain yet.</h1>
+              <NFTCollectionForm
+                basePrice={"0.005"}
+                collectionIpfsLink={artistNFTData?.collectionIPFSLink || ""}
+              />
+            </div>
+          )}
+        {((artistData && !artistData.nftCollection.contractAddress) ||
+          artistData.nftCollection.contractAddress.length != 42) &&
+          artistData.artistWalletAddress !== address && (
+            <div className="z-[9999999] border-2 border-white bg-purple-700 rounded-xl lg:px-10 lg:py-4 p-2 text-white tracking-widest text-xl flex items-center justify-around lg:w-[60%] flex-wrap w-[100%] mx-auto">
+              <h1>This collection has not yet been deployed by the artist</h1>
+            </div>
+          )}
+      </h1>
+      <div className="mt-20 lg:grid lg:grid-cols-3 flex flex-col items-center justify-between gap-x-4 gap-y-10">
+        {artistNFTData?.nftImagesLinks.map((imageItem) => {
+          return (
+            <ShinyNFTCard
+              nftMetadata={imageItem}
+              artistName={artistData.artistName}
+              collectionAddress={artistData.nftCollection.contractAddress}
+              isDeployed={
+                !(
+                  (artistData && !artistData.nftCollection.contractAddress) ||
+                  artistData.nftCollection.contractAddress.length != 42
+                )
+              }
+              key={imageItem.tokenId}
+            />
+          );
+        })}
+      </div>
+      <div className="flex justify-center gap-x-10 w-full max-w-6xl pb-10 mt-20">
+        {currentPage > 1 && (
+          <GradientButton
+            onClick={() => {
+              router.push(
+                `/artists/${artistAddress}/nft-collections/page/${
+                  currentPage - 1
+                }`
+              );
+            }}
+            btnText="Previous"
+            className="w-40"
+          />
+        )}
+        {currentPage < totalPages && (
+          <GradientButton
+            onClick={() => {
+              router.push(
+                `/artists/${artistAddress}/nft-collections/page/${
+                  currentPage + 1
+                }`
+              );
+            }}
+            btnText="Next"
+            className="w-40"
+          />
+        )}
+      </div>
+    </div>
+  );
 };
 export default ArtistNFTPage;

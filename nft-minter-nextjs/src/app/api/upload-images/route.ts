@@ -13,7 +13,7 @@ import {
   LayerFilesProps,
 } from "@/lib/interfaces";
 
-const MAX_GENERATION_CAP = 5;
+const MAX_GENERATION_CAP = 49;
 
 const jsonFilesToPin: Blob[] = [];
 
@@ -336,10 +336,12 @@ async function createImage(
           },
         }
       );
-      console.log(`pinResult : `, pinResult);
-      console.log(`pinJSONResult : `, pinJSONResult);
+      // console.log(`pinResult : `, pinResult);
+      // console.log(`pinJSONResult : `, pinJSONResult);
 
       NFTImagesInstance.nftImagesLinks.push({
+        name,
+        description,
         decentralizedURL: `ipfs://${pinResult.IpfsHash}`,
         centralizedURL: `https://ipfs.io/ipfs/${pinResult.IpfsHash}`,
         // jsonFileDecentralizedURL: `ipfs://${pinJSONResult.IpfsHash}`,

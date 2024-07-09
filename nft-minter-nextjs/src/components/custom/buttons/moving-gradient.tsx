@@ -5,14 +5,17 @@ const MovingGradientButton = ({
   onClick,
   btnText,
   className,
+  disabled,
 }: {
   onClick: any;
   btnText: string;
   className?: string;
+  disabled?: boolean;
 }) => {
   return (
     <button
       onClick={onClick}
+      disabled={disabled || false}
       className={cn(
         "relative inline-flex h-12 overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50",
         className

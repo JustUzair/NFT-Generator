@@ -68,7 +68,7 @@ export async function PATCH(req: NextRequest, context: any, res: NextResponse) {
 
   try {
     await dbConnect();
-    console.log("triggering in ");
+    // console.log("triggering in ");
 
     const data = await req.formData();
     const artistName = data.get("artistName") as unknown as string;

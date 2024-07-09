@@ -1,22 +1,26 @@
-import { http, createConfig } from "wagmi";
-import { polygonAmoy, polygon } from "wagmi/chains";
-
-import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+const projectId = process.env.NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID || "";
 import {
-  injectedWallet,
+  mainnet,
+  optimismSepolia,
+  optimism,
+  base,
+  baseSepolia,
+  sepolia,
+  polygonAmoy,
+  polygon,
+} from "wagmi/chains";
+import { http } from "wagmi";
+import { createConfig } from "@wagmi/core";
+import {
   rainbowWallet,
   metaMaskWallet,
-  coinbaseWallet,
-  walletConnectWallet,
   safeWallet,
-  phantomWallet,
+  injectedWallet,
   trustWallet,
-  argentWallet,
-  okxWallet,
-  bifrostWallet,
+  phantomWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
-const projectId = process.env.NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID || "";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 
 const connectors = connectorsForWallets(
   [
@@ -29,26 +33,48 @@ const connectors = connectorsForWallets(
         injectedWallet,
         trustWallet,
         phantomWallet,
-        argentWallet,
       ],
     },
   ],
   {
-    appName: "Mintrrs",
     projectId,
-    appDescription: "NFT Gen & Minting Platform",
+    appName: "Mintrrs",
+    appDescription: "Mintrrs",
   }
 );
 
 export const config = createConfig({
-  chains: [polygonAmoy, polygon],
+  chains: [
+    // mainnet,
+    // optimism,
+    // base,
+    polygon,
+    /*  sepolia,
+    optimismSepolia,
+    baseSepolia, */
+    polygonAmoy,
+  ],
   transports: {
-    [polygonAmoy.id]: http(),
-
+    // [mainnet.id]: http(),
+    // [optimism.id]: http(),
+    // [base.id]: http(),
     [polygon.id]: http(),
+    // [sepolia.id]: http(),
+    // [optimismSepolia.id]: http(),
+    // [baseSepolia.id]: http(),
+    [polygonAmoy.id]: http(),
   },
 
   connectors,
 });
 
-export const supportedChains = [polygonAmoy.id, polygon.id];
+export const supportedChains = [
+  // mainnet.id,
+  // optimism.id,
+  // base.id,
+  polygon.id,
+  // sepolia.id,
+  // optimismSepolia.id,
+  // baseSepolia.id,
+  polygonAmoy.id,
+];

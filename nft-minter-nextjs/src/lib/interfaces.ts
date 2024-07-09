@@ -69,6 +69,8 @@ interface NFTImagesLinks {
   centralizedURL: string;
   basePrice: number;
   tokenId: number;
+  name: string;
+  description: string;
   _id: string;
 }
 
@@ -78,6 +80,7 @@ interface ArtistNFTData {
     artist: Artist;
   };
   nftImagesLinks: NFTImagesLinks[];
+  collectionIPFSLink: string;
 }
 
 export type {
@@ -89,4 +92,5 @@ export type {
   FileTypeProps,
   Artist,
   ArtistNFTData,
+  NFTImagesLinks,
 };
