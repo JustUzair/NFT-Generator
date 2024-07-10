@@ -20,7 +20,7 @@ import {
   ConnectorNotConnectedError,
 } from "@wagmi/core";
 import { getContractFactory } from "@/lib/web3-utils/constants";
-import { formatEther, ContractFunctionExecutionError } from "viem";
+import { formatEther, ContractFunctionExecutionError, Abi } from "viem";
 import ShimmerButton from "@/components/custom/buttons/shimmer-button";
 
 const ArtistsLayout = () => {
@@ -45,9 +45,15 @@ const ArtistsLayout = () => {
       return;
     }
     const contractFactory = getContractFactory(chainId);
-    if (contractFactory && artistData?.nftCollection.contractAddress) {
+    if (
+      (contractFactory &&
+        artistData &&
+        artistData?.nftCollection &&
+        artistData?.nftCollection.contractAddress != null) ||
+      artistData?.nftCollection.contractAddress.length === 42
+    ) {
       const data = await readContract(config, {
-        abi: contractFactory?.erc1155Abi,
+        abi: contractFactory?.erc1155Abi as Abi,
         address: artistData?.nftCollection.contractAddress as `0x${string}`,
         functionName: "getWithdrawableRevenue",
       });
@@ -146,7 +152,12 @@ const ArtistsLayout = () => {
     }
   }
   async function populateArtistData(address: string) {
-    setArtistData(await getArtistByWalletAddress(address));
+    const artist = await getArtistByWalletAddress(address);
+    if (artist === null) {
+      toast.error("You may not be registered as an artist!");
+      return;
+    }
+    setArtistData(artist);
     setUpdatedArtistName(
       ((await getArtistByWalletAddress(address)) as Artist).artistName
     );
@@ -197,7 +208,12 @@ const ArtistsLayout = () => {
     }
   }, [address]);
   useEffect(() => {
-    getArtistRevenue();
+    if (
+      artistData &&
+      artistData.artistWalletAddress == address &&
+      artistData.nftCollection.contractAddress
+    )
+      getArtistRevenue();
   }, [chainId, address, artistData]);
 
   if (chainId && !supportedChains.includes(chainId as 137 | 80002))
@@ -339,25 +355,31 @@ const ArtistsLayout = () => {
             </div>
           </form>
         </div>
-        <div className="flex flex-col items-start justify-center gap-7">
-          <h1 className="tracking-widest text-center font-semibold text-4xl text-purple-500">
-            Withdraw your Revenue
-          </h1>
-          <span className="font-extralight tracking-tight text-4xl  text-gray-300 not-italic !no-underline">
-            Available:{"  "}
-            <span className="text-white tracking-widest font-bold ">
-              {revenue} {chain.nativeCurrency.symbol}
-            </span>{" "}
-          </span>
-          <ShimmerButton
-            className="w-[100%]"
-            btnText={!tx ? "Withdraw Balance" : "Withdrawing..."}
-            disabled={tx || parseFloat(revenue) <= 0}
-            onClick={() => {
-              withdrawArtistRevenue();
-            }}
-          />
-        </div>
+        {artistData &&
+        artistData.artistWalletAddress == address &&
+        artistData.nftCollection.contractAddress ? (
+          <div className="flex flex-col items-start justify-center gap-7">
+            <h1 className="tracking-widest text-center font-semibold text-4xl text-purple-500">
+              Withdraw your Revenue
+            </h1>
+            <span className="font-extralight tracking-tight text-4xl  text-gray-300 not-italic !no-underline">
+              Available:{"  "}
+              <span className="text-white tracking-widest font-bold ">
+                {revenue} {chain.nativeCurrency.symbol}
+              </span>{" "}
+            </span>
+            <ShimmerButton
+              className="w-[100%]"
+              btnText={!tx ? "Withdraw Balance" : "Withdrawing..."}
+              disabled={tx || parseFloat(revenue) <= 0}
+              onClick={() => {
+                withdrawArtistRevenue();
+              }}
+            />
+          </div>
+        ) : (
+          <Warning message="You haven't yet deployed your collection." />
+        )}
       </div>
     );
 };

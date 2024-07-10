@@ -1,20 +1,39 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAccount } from "wagmi";
+import { getArtistByWalletAddress } from "@/lib/api-function-utils";
 
 type Props = {};
 
 const Navbar = (props: Props) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isArtist, setIsArtist] = useState(false);
+  const dropdownRef = useRef<HTMLLIElement>(null);
+
+  const { address } = useAccount();
+
+  useEffect(() => {
+    (async () => {
+      if (address) {
+        // console.log("====================================");
+        // console.log(await getArtistByWalletAddress(address));
+        // console.log("====================================");
+        setIsArtist((await getArtistByWalletAddress(address)) !== null);
+      }
+    })();
+  }, [address]);
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const { address } = useAccount();
+  const handleProfileToggle = () => {
+    setIsProfileOpen(!isProfileOpen);
+  };
 
   return (
     <nav className="bg-zinc-900 fixed w-full z-20 top-0 start-0 border-b border-zinc-700">
@@ -31,7 +50,7 @@ const Navbar = (props: Props) => {
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           <button
             type="button"
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm  rounded-lg md:hidden hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-gray-200 text-gray-400 "
+            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm rounded-lg md:hidden hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-gray-200 text-gray-400"
             aria-controls="navbar-sticky"
             aria-expanded={isMenuOpen}
             onClick={handleMenuToggle}
@@ -60,7 +79,7 @@ const Navbar = (props: Props) => {
           } items-center justify-between w-full md:flex md:w-auto md:order-1`}
           id="navbar-sticky"
         >
-          <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium lg:gap-0 gap-5 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 ">
+          <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium lg:gap-0 gap-5 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0">
             <li>
               <Link
                 href="/"
@@ -71,7 +90,6 @@ const Navbar = (props: Props) => {
               </Link>
             </li>
             <hr className="text-white opacity-20 w-[70%] text-center visible md:hidden lg:hidden" />
-            {/* Uncomment the following links if needed */}
             <li>
               <Link
                 href="/artists/page/1"
@@ -80,26 +98,90 @@ const Navbar = (props: Props) => {
                 Artists
               </Link>
             </li>
-
-            {/* <li>
-              <Link
-                href="#"
-                className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
-              >
-                Services
-              </Link>
-            </li> */}
-            {address && (
+            {address && !isArtist && (
               <>
                 <hr className="text-white opacity-20 w-[70%] text-center visible md:hidden lg:hidden" />
 
                 <li>
                   <Link
-                    href="/artist"
+                    href="/artist/register"
                     className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
                   >
-                    Profile
+                    Register
                   </Link>
+                </li>
+              </>
+            )}
+            {address && isArtist && (
+              <>
+                <hr className="text-white opacity-20 w-[70%] text-center visible md:hidden lg:hidden" />
+                <li ref={dropdownRef} className="relative">
+                  <div className="md:hidden">
+                    <span className="block py-2 px-3 text-gray-300 font-semibold">
+                      Profile
+                    </span>
+                    <ul className="pl-4 space-y-2">
+                      <li>
+                        <Link
+                          href="/artist"
+                          className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150"
+                        >
+                          My Profile
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/artist/upload-and-generate"
+                          className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150"
+                        >
+                          Upload & Generate
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="hidden md:block">
+                    <button
+                      onClick={handleProfileToggle}
+                      className="flex items-center py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
+                    >
+                      Profile
+                      <svg
+                        className={`w-4 h-4 ml-2 transform ${
+                          isProfileOpen ? "rotate-180" : ""
+                        } transition-transform duration-200`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        ></path>
+                      </svg>
+                    </button>
+                    {isProfileOpen && (
+                      <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-zinc-800 ring-1 ring-black ring-opacity-5 divide-y divide-gray-700">
+                        <div className="py-1">
+                          <Link
+                            href="/artist"
+                            className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150"
+                          >
+                            My Profile
+                          </Link>
+
+                          <Link
+                            href="/artist/upload-and-generate"
+                            className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150"
+                          >
+                            Upload & Generate
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </li>
               </>
             )}

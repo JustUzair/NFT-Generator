@@ -60,46 +60,53 @@ const ArtistNFTPage = ({
     console.log("====================================");
     console.log(`artistNFTData\n`, artistNFTData);
     console.log("====================================");
-  }, [artistNFTData]);
+  }, [artistNFTData, address]);
   const fetchArtistsWithNFT = async (page: number) => {
     try {
       const res = await fetch(
         `/api/nfts/${artistAddress}?page=${page}&limit=12`
       );
       const data = await res.json();
-      setArtistNFTData(data.artistNFTData);
-      setTotalPages(data.pagination.totalPages);
-      console.log("====================================");
-      console.log(data);
-      console.log("====================================");
+      if (data.message === "success") {
+        setArtistNFTData(data.artistNFTData);
+        setTotalPages(data.pagination.totalPages);
+        console.log("====================================");
+        console.log(data);
+        console.log("====================================");
+      } else {
+        console.log("============ERROR================");
+        console.log(data);
+        console.log("====================================");
+        toast.error(data.errorData);
+      }
     } catch (error) {
       console.error("Error fetching artists:", error);
       toast.error("Error fetching artists");
     }
   };
 
-  // if (
-  //   artistAddress == null ||
-  //   artistAddress == "" ||
-  //   artistAddress.length != 42
-  // ) {
-  //   return <Error message="Invalid Artist Address" />;
-  // }
+  if (
+    artistAddress == null ||
+    artistAddress == "" ||
+    artistAddress.length != 42
+  ) {
+    return <Error message="Invalid Artist Address" />;
+  }
 
-  // //   @ts-ignore
-  // if (chainId && !supportedChains.includes(chainId)) {
-  //   return <Error message="Please connect to the supported network" />;
-  // }
-  // if (!chain || !chainId) {
-  //   toast.warning(
-  //     "No Network Connected, Please connect to a network and try again. "
-  //   );
-  //   return (
-  //     <div className="mt-30">
-  //       <Warning message="No Network Connected, Please connect to a network and try again. " />
-  //     </div>
-  //   );
-  // }
+  //   @ts-ignore
+  if (chainId && !supportedChains.includes(chainId)) {
+    return <Error message="Please connect to the supported network" />;
+  }
+  if (!chain || !chainId) {
+    toast.warning(
+      "No Network Connected, Please connect to a network and try again. "
+    );
+    return (
+      <div className="mt-30">
+        <Warning message="No Network Connected, Please connect to a network and try again. " />
+      </div>
+    );
+  }
   // if (
   //   !artistData ||
   //   (artistData && !(artistData.artistWalletAddress == address))
@@ -119,16 +126,26 @@ const ArtistNFTPage = ({
   //   (artistData.nftCollection &&
   //     artistData.nftCollection.contractAddress == null) ||
   //   artistData.nftCollection.contractAddress == "" ||
-  //   artistData.nftCollection.contractAddress.length != 42
+  //   (artistData.nftCollection.contractAddress.length != 42 &&
+  //     artistData.artistWalletAddress != address)
   // ) {
   //   return <Error message="No Collection has been deployed by th artist" />;
   // } else
   return (
     <div className="mt-20 max-w-[85%] mx-auto">
       <h1 className="tracking-widest text-center font-semibold text-4xl text-purple-500">
+        {artistNFTData == null && artistAddress == address && (
+          <div className="z-[9999999] border-2 border-white bg-purple-700 rounded-xl lg:px-10 lg:py-4 p-2 text-white tracking-widest text-xl flex items-center justify-around lg:w-[60%] flex-wrap w-[100%] mx-auto">
+            <h1>
+              You havent generated the arts yet, generate to take them on-chain
+            </h1>
+          </div>
+        )}
         {((artistData && !artistData.nftCollection.contractAddress) ||
           artistData.nftCollection.contractAddress.length != 42) &&
-          artistData.artistWalletAddress === address && (
+          artistData.artistWalletAddress === address &&
+          artistNFTData &&
+          artistNFTData?.nftImagesLinks?.length > 0 && (
             <div className="z-[9999999] border-2 border-white bg-purple-700 rounded-xl lg:px-10 lg:py-4 p-2 text-white tracking-widest text-xl flex items-center justify-around lg:w-[60%] flex-wrap w-[100%] mx-auto">
               <h1>Your collection is not on chain yet.</h1>
               <NFTCollectionForm
@@ -137,11 +154,12 @@ const ArtistNFTPage = ({
               />
             </div>
           )}
+
         {((artistData && !artistData.nftCollection.contractAddress) ||
           artistData.nftCollection.contractAddress.length != 42) &&
           artistData.artistWalletAddress !== address && (
             <div className="z-[9999999] border-2 border-white bg-purple-700 rounded-xl lg:px-10 lg:py-4 p-2 text-white tracking-widest text-xl flex items-center justify-around lg:w-[60%] flex-wrap w-[100%] mx-auto">
-              <h1>This collection has not yet been deployed by the artist</h1>
+              <h1>No collection has yet been deployed by the artist</h1>
             </div>
           )}
       </h1>
@@ -163,7 +181,7 @@ const ArtistNFTPage = ({
           );
         })}
       </div>
-      <div className="flex justify-center gap-x-10 w-full max-w-6xl pb-10 mt-20">
+      <div className="flex items-center justify-center gap-x-10 w-full max-w-6xl pb-10 mt-20 mx-auto">
         {currentPage > 1 && (
           <GradientButton
             onClick={() => {

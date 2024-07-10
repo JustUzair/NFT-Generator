@@ -4,7 +4,8 @@ async function getArtistByWalletAddress(walletAddress: string) {
   const response = await fetch(`/api/artists/${walletAddress}`);
   const data = await response.json();
   if (data.message === "error") {
-    return toast.error(data.errorData);
+    // toast.error(data.errorData);
+    return null;
   }
   console.log("====================================");
   console.log(data);

@@ -4,8 +4,6 @@ import { dbConnect } from "@/lib/db";
 import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
-import fs from "fs";
-import { url } from "inspector";
 export async function POST(req: NextRequest, context: any) {
   // URL Structure - http://localhost:3000/api/artists/<wallet-address>
   try {

@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
     // console.log(page, limit);
 
     const artists = await Artists.find({ active: true })
+      .sort({ _id: -1 })
       .skip(skip)
       .limit(limit);
 
