@@ -13,7 +13,7 @@ import {
   LayerFilesProps,
 } from "@/lib/interfaces";
 
-const MAX_GENERATION_CAP = 49;
+const MAX_GENERATION_CAP = 35;
 
 const jsonFilesToPin: Blob[] = [];
 

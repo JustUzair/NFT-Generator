@@ -137,7 +137,9 @@ const ArtistNFTPage = ({
         {artistNFTData == null && artistAddress == address && (
           <div className="z-[9999999] border-2 border-white bg-purple-700 rounded-xl lg:px-10 lg:py-4 p-2 text-white tracking-widest text-xl flex items-center justify-around lg:w-[60%] flex-wrap w-[100%] mx-auto">
             <h1>
-              You havent generated the arts yet, generate to take them on-chain
+              {
+                "You haven't generated the arts yet, generate to take them on-chain"
+              }
             </h1>
           </div>
         )}

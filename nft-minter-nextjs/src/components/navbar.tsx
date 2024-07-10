@@ -39,6 +39,7 @@ const Navbar = (props: Props) => {
     <nav className="bg-zinc-900 fixed w-full z-20 top-0 start-0 border-b border-zinc-700">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <Link
+          onClick={handleProfileToggle}
           href="/"
           className="flex items-center space-x-3 rtl:space-x-reverse"
         >
@@ -82,6 +83,7 @@ const Navbar = (props: Props) => {
           <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium lg:gap-0 gap-5 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0">
             <li>
               <Link
+                onClick={handleProfileToggle}
                 href="/"
                 className="block py-2 px-3 rounded text-gray-300 hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
                 aria-current="page"
@@ -92,6 +94,7 @@ const Navbar = (props: Props) => {
             <hr className="text-white opacity-20 w-[70%] text-center visible md:hidden lg:hidden" />
             <li>
               <Link
+                onClick={handleProfileToggle}
                 href="/artists/page/1"
                 className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
               >
@@ -104,6 +107,7 @@ const Navbar = (props: Props) => {
 
                 <li>
                   <Link
+                    onClick={handleProfileToggle}
                     href="/artist/register"
                     className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
                   >
@@ -123,6 +127,7 @@ const Navbar = (props: Props) => {
                     <ul className="pl-4 space-y-2">
                       <li>
                         <Link
+                          onClick={handleProfileToggle}
                           href="/artist"
                           className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150"
                         >
@@ -131,6 +136,7 @@ const Navbar = (props: Props) => {
                       </li>
                       <li>
                         <Link
+                          onClick={handleProfileToggle}
                           href="/artist/upload-and-generate"
                           className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150"
                         >
@@ -166,6 +172,7 @@ const Navbar = (props: Props) => {
                       <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-zinc-800 ring-1 ring-black ring-opacity-5 divide-y divide-gray-700">
                         <div className="py-1">
                           <Link
+                            onClick={handleProfileToggle}
                             href="/artist"
                             className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150"
                           >
@@ -173,6 +180,7 @@ const Navbar = (props: Props) => {
                           </Link>
 
                           <Link
+                            onClick={handleProfileToggle}
                             href="/artist/upload-and-generate"
                             className="block py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150"
                           >

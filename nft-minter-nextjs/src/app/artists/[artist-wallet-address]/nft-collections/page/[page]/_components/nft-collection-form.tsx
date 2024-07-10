@@ -159,9 +159,6 @@ export default function NFTCollectionForm({
         <ShimmerButton
           btnText="Deploy Your Collection"
           className="lg:text-base text-sm break-words"
-          onClick={() => {
-            // @TODO : Deploy Collection on Chain
-          }}
         />
       </DrawerTrigger>
       <DrawerContent className="bg-black/80 border-none text-white">

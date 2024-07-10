@@ -140,7 +140,7 @@ export default function ShinyNFTCard({
         >
           {nftMetadata.description}
         </CardItem>
-        <CardItem translateZ="100" className="w-full mt-4">
+        <CardItem translateZ="100" className="w-full my-8">
           <Image
             src={nftMetadata.centralizedURL}
             height="100"

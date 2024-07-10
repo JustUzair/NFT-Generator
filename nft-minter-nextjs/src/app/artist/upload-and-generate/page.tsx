@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useAccount } from "wagmi";
 import { toast } from "sonner";
 import { getArtistByWalletAddress } from "@/lib/api-function-utils";
-import { Artist } from "@/lib/interfaces";
+import { Artist, ArtistNFTData } from "@/lib/interfaces";
 import { supportedChains } from "@/constants/config";
 import Error from "@/components/errors/error";
 import Warning from "@/components/errors/warning";
@@ -26,6 +26,10 @@ export default function UploadForm() {
   const [previews, setPreviews] = useState<ImageGroup[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [artistData, setArtistData] = useState<Artist | null>(null);
+  const [artistNFTData, setArtistNFTData] = useState<ArtistNFTData | null>(
+    null
+  );
+  const [hasGeneratedNFT, setHasGeneratedNFT] = useState<boolean>(false);
   const [updatedArtistName, setUpdatedArtistName] = useState<string>(
     artistData?.artistName || ""
   );
@@ -33,9 +37,39 @@ export default function UploadForm() {
   useEffect(() => {
     if (address) {
       populateArtistData(address);
+      fetchArtistsWithNFT(1);
     }
   }, [address]);
+  useEffect(() => {
+    if (artistNFTData) {
+      setHasGeneratedNFT(
+        artistNFTData.nftImagesLinks.length > 0 &&
+          artistNFTData.collectionIPFSLink.length > 0
+      );
+    }
+  }, [artistNFTData]);
 
+  const fetchArtistsWithNFT = async (page: number) => {
+    try {
+      const res = await fetch(`/api/nfts/${address}?page=${page}&limit=12`);
+      const data = await res.json();
+      if (data.message === "success") {
+        setArtistNFTData(data.artistNFTData);
+
+        console.log("====================================");
+        console.log(data);
+        console.log("====================================");
+      } else {
+        console.log("============ERROR================");
+        console.log(data);
+        console.log("====================================");
+        toast.error(data.errorData);
+      }
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+      toast.error("Error fetching artists");
+    }
+  };
   async function populateArtistData(address: string) {
     const artist = await getArtistByWalletAddress(address);
     if (artist === null) {
@@ -145,7 +179,8 @@ export default function UploadForm() {
     chain &&
     address &&
     artistData &&
-    artistData.artistWalletAddress == address
+    artistData.artistWalletAddress == address &&
+    !hasGeneratedNFT
   )
     return (
       <>
@@ -246,4 +281,13 @@ export default function UploadForm() {
         </div>
       </>
     );
+  else {
+    return (
+      <Warning
+        message="
+      You have already generated the NFTs, you can view them on the artist page.
+      "
+      />
+    );
+  }
 }
