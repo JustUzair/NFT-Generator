@@ -4,7 +4,7 @@ import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { IconAppWindow } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
-import ShimmerButton from "../buttons/shimmer-button";
+import ShimmerButton from "@/components/custom/buttons/shimmer-button";
 import { useRouter } from "next/navigation";
 import GradientButton from "../buttons/gradient";
 import { useAccount } from "wagmi";
@@ -67,7 +67,7 @@ export default function ArtistGradientCard({
           <ShimmerButton
             className="mt-4 mx-auto flex items-center justify-center"
             btnText="View NFTs"
-            onClick={() => {
+            onClickHandler={() => {
               router.push(
                 `/artists/${artist.artistWalletAddress}/nft-collections/page/1`
               );

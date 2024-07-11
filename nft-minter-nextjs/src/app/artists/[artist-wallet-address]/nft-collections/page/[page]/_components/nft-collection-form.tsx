@@ -156,10 +156,12 @@ export default function NFTCollectionForm({
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <ShimmerButton
-          btnText="Deploy Your Collection"
-          className="lg:text-base text-sm break-words"
-        />
+        <div>
+          <ShimmerButton
+            btnText="Deploy Your Collection"
+            className="lg:text-base text-sm break-words"
+          />
+        </div>
       </DrawerTrigger>
       <DrawerContent className="bg-black/80 border-none text-white">
         <div className="mx-auto w-full max-w-sm">

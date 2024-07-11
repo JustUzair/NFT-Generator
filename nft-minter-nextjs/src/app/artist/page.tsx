@@ -372,7 +372,7 @@ const ArtistsLayout = () => {
               className="w-[100%]"
               btnText={!tx ? "Withdraw Balance" : "Withdrawing..."}
               disabled={tx || parseFloat(revenue) <= 0}
-              onClick={() => {
+              onClickHandler={() => {
                 withdrawArtistRevenue();
               }}
             />

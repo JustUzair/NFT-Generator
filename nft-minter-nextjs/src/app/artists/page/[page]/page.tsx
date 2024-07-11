@@ -1,6 +1,7 @@
 "use client";
 import GradientButton from "@/components/custom/buttons/gradient";
 import GradientArtistCard from "@/components/custom/cards/gradient-artist-card";
+import Loader from "@/components/loader";
 import { Artist } from "@/lib/interfaces";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -11,10 +12,14 @@ export default function ArtistsPage({ params }: { params: { page: string } }) {
   const currentPage = parseInt(params.page, 10);
   const [artists, setArtists] = useState<Artist[]>([]);
   const [totalPages, setTotalPages] = useState(0);
-
+  const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
     fetchArtists(currentPage);
   }, [currentPage]);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   const fetchArtists = async (page: number) => {
     try {
@@ -48,43 +53,44 @@ export default function ArtistsPage({ params }: { params: { page: string } }) {
     ];
     return sizes[index % sizes.length];
   };
+  if (!isLoaded) return <Loader />;
+  if (isLoaded)
+    return (
+      <div className="max-w-[85%] mx-auto">
+        <div className="lg:grid lg:grid-cols-3 gap-4 pb-20 lg:auto-rows-[minmax(100px, auto)] flex flex-col justify-between items-center">
+          {artists.map((artist, index) => (
+            <div
+              key={artist._id}
+              className={`${getCardSize(index)} rounded-3xl w-[100%] h-[100%]`}
+            >
+              <GradientArtistCard
+                artist={artist}
+                className="!h-[100%] !w-[100%]"
+              />
+            </div>
+          ))}
+        </div>
 
-  return (
-    <div className="max-w-[85%] mx-auto">
-      <div className="lg:grid lg:grid-cols-3 gap-4 pb-20 lg:auto-rows-[minmax(100px, auto)] flex flex-col justify-between items-center">
-        {artists.map((artist, index) => (
-          <div
-            key={artist._id}
-            className={`${getCardSize(index)} rounded-3xl w-[100%] h-[100%]`}
-          >
-            <GradientArtistCard
-              artist={artist}
-              className="!h-[100%] !w-[100%]"
+        <div className="flex justify-center gap-x-10 w-full max-w-6xl pb-10">
+          {currentPage > 1 && (
+            <GradientButton
+              onClick={() => {
+                router.push(`/artists/page/${currentPage - 1}`);
+              }}
+              btnText="Previous"
+              className="w-40"
             />
-          </div>
-        ))}
+          )}
+          {currentPage < totalPages && (
+            <GradientButton
+              onClick={() => {
+                router.push(`/artists/page/${currentPage + 1}`);
+              }}
+              btnText="Next"
+              className="w-40"
+            />
+          )}
+        </div>
       </div>
-
-      <div className="flex justify-center gap-x-10 w-full max-w-6xl pb-10">
-        {currentPage > 1 && (
-          <GradientButton
-            onClick={() => {
-              router.push(`/artists/page/${currentPage - 1}`);
-            }}
-            btnText="Previous"
-            className="w-40"
-          />
-        )}
-        {currentPage < totalPages && (
-          <GradientButton
-            onClick={() => {
-              router.push(`/artists/page/${currentPage + 1}`);
-            }}
-            btnText="Next"
-            className="w-40"
-          />
-        )}
-      </div>
-    </div>
-  );
+    );
 }
