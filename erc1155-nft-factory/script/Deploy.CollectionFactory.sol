@@ -22,7 +22,7 @@ contract ERC1155CollectionDeployScript is Script {
         collectionFactory = new NFTCollectionFactory(0xA72e562f24515C060F36A2DA07e0442899D39d2c);
         erc1155Collection = NFTCollection(
             collectionFactory.createCollection(
-                "ipfs://QmVt4HPw6auonVSRA3vxbcaHiREwBcrXnrGJYWaGbRCtFd/", "BoredHippie", "BoredHippie", 0.000005 ether
+                "ipfs://QmPSMWoLhMHECBkKxYbF9GjEc81eEwVVoeEsAziVLC95Et/", "0xsal", "0xsal", 0.005 ether
             )
         );
         console2.log("collectionFactory deployed at : ", address(collectionFactory));

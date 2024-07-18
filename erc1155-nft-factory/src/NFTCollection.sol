@@ -8,6 +8,9 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+import {MockUSDC} from "./ERC20/MockUSDC.sol";
 
 contract NFTCollection is ERC1155, Ownable, ERC1155Pausable, ERC1155Supply {
     mapping(address holder => mapping(uint256 id => bool isHolding)) public holders;
@@ -17,8 +20,10 @@ contract NFTCollection is ERC1155, Ownable, ERC1155Pausable, ERC1155Supply {
     string public name;
     string public symbol;
     string public CONTRACT_URI;
-    uint256 price;
+    uint256 etherPrice;
+    uint256 usdcPrice; // amount of tokens to be sent for minting nft
     uint256 artistRevenue;
+    address usdcToken;
 
     event NFTCollection__MintedToUser(uint256 indexed id, address indexed to);
 
@@ -27,11 +32,15 @@ contract NFTCollection is ERC1155, Ownable, ERC1155Pausable, ERC1155Supply {
         string memory _tokenURI,
         string memory _name,
         string memory _symbol,
-        uint256 _price
+        uint256 _price,
+        address _udscToken,
+        uint256 _usdcPrice
     ) ERC1155(_tokenURI) Ownable(initialOwner) {
         name = _name;
         symbol = _symbol;
-        price = _price;
+        etherPrice = _price;
+        usdcPrice = _usdcPrice;
+        usdcToken = _udscToken;
     }
 
     function setContractURI(string memory _newURI) public onlyOwner {
@@ -67,8 +76,14 @@ contract NFTCollection is ERC1155, Ownable, ERC1155Pausable, ERC1155Supply {
     // @param - data: extra data to add for minting the token
     function mint(uint256 id, address receiver, bytes memory data) public payable {
         require(!holders[receiver][id], "Already Minted");
-        require(msg.value == price, "Incorrect Price");
-        artistRevenue += msg.value;
+        if (msg.value > 0) {
+            require(msg.value == etherPrice, "Incorrect Price");
+            artistRevenue += msg.value;
+        } else {
+            require(msg.value == 0, "Cannot purchase with ether when using USDC.");
+            bool success = IERC20(usdcToken).transferFrom(msg.sender, owner(), usdcPrice);
+            require(success, "Transfer failed.");
+        }
         holders[receiver][id] = true;
         userNFTs[receiver].push(id);
         _mint(receiver, id, 1, data);
@@ -78,8 +93,14 @@ contract NFTCollection is ERC1155, Ownable, ERC1155Pausable, ERC1155Supply {
     // @param - id of token to mint to msg.sender
     function mintToSender(uint256 id) public payable {
         require(!holders[msg.sender][id], "Already Minted");
-        require(msg.value == price, "Incorrect Price");
-        artistRevenue += msg.value;
+        if (msg.value > 0) {
+            require(msg.value == etherPrice, "Incorrect Price");
+            artistRevenue += msg.value;
+        } else {
+            require(msg.value == 0, "Cannot purchase with ether when using USDC.");
+            bool success = IERC20(usdcToken).transferFrom(msg.sender, owner(), usdcPrice);
+            require(success, "Transfer failed.");
+        }
         holders[msg.sender][id] = true;
         userNFTs[msg.sender].push(id);
         _mint(msg.sender, id, 1, bytes(""));
@@ -114,11 +135,11 @@ contract NFTCollection is ERC1155, Ownable, ERC1155Pausable, ERC1155Supply {
     }
 
     function getNFTPrice() public view returns (uint256) {
-        return price;
+        return etherPrice;
     }
 
     function setNFTPrice(uint256 _newPrice) public onlyOwner {
-        price = _newPrice;
+        etherPrice = _newPrice;
     }
 
     function getUserNFTs(address _user) public view returns (uint256[] memory) {

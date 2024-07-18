@@ -4,6 +4,7 @@ pragma solidity ^0.8.22;
 import {Test} from "forge-std/Test.sol";
 
 import {NFTCollection} from "../src/NFTCollection.sol";
+import {MockUSDC} from "../src/ERC20/MockUSDC.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {console2} from "forge-std/console2.sol";
 
@@ -11,7 +12,7 @@ contract NFTCollectionTest is Test {
     address owner = makeAddr("owner");
     address user1 = makeAddr("user1");
     address user2 = makeAddr("user2");
-
+    MockUSDC usdcToken;
     NFTCollection erc1155Collection;
 
     function setUp() public {
@@ -20,8 +21,16 @@ contract NFTCollectionTest is Test {
         vm.deal(user2, 1000 ether);
 
         vm.startBroadcast(owner);
+        usdcToken = new MockUSDC(6);
+        usdcToken.mint(owner, 10000000000000);
         erc1155Collection = new NFTCollection(
-            owner, "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/", "Kyte Sprint", "SPRNT", 0.05 ether
+            owner,
+            "ipfs://QmRaNapy2YG1iF8yywdJGn5BehDc4RyxxUMM49uK7D8MXv/",
+            "Kyte Sprint",
+            "SPRNT",
+            0.05 ether,
+            address(usdcToken),
+            5e6
         );
         erc1155Collection.mint{value: 0.05 ether}(0, owner, "");
         erc1155Collection.mint{value: 0.05 ether}(1, owner, "");
@@ -107,6 +116,14 @@ contract NFTCollectionTest is Test {
         require(withdrawAmount == 0.1 ether, "Incorrect withdrawable revenue");
         vm.startBroadcast(owner);
         erc1155Collection.withdrawRevenue();
+        vm.stopBroadcast();
+    }
+
+    function test_purchaseWithUSDC() public {
+        vm.startBroadcast(owner);
+        require(usdcToken.balanceOf(owner) >= 5e6, "Insufficient balance");
+        usdcToken.approve(address(erc1155Collection), 5e6);
+        erc1155Collection.mint(2, owner, "");
         vm.stopBroadcast();
     }
 }
