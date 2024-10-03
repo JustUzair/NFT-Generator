@@ -45,17 +45,19 @@ const connectors = connectorsForWallets(
 
 export const config = createConfig({
   chains: [
-    // mainnet,
+    mainnet,
     // optimism,
     // base,
     polygon,
+    sepolia,
+
     /*  sepolia,
     optimismSepolia,
     baseSepolia, */
     polygonAmoy,
   ],
   transports: {
-    // [mainnet.id]: http(),
+    [mainnet.id]: http(),
     // [optimism.id]: http(),
     // [base.id]: http(),
     [polygon.id]: http(),
@@ -63,17 +65,18 @@ export const config = createConfig({
     // [optimismSepolia.id]: http(),
     // [baseSepolia.id]: http(),
     [polygonAmoy.id]: http(),
+    [sepolia.id]: http(),
   },
 
   connectors,
 });
 
 export const supportedChains = [
-  // mainnet.id,
+  mainnet.id,
   // optimism.id,
   // base.id,
   polygon.id,
-  // sepolia.id,
+  sepolia.id,
   // optimismSepolia.id,
   // baseSepolia.id,
   polygonAmoy.id,

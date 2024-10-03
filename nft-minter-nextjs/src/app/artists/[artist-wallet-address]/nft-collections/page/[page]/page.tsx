@@ -44,9 +44,9 @@ const ArtistNFTPage = ({
   );
   async function getData() {
     const artistData = await getArtistByWalletAddress(artistAddress);
-    // console.log("====================================");
-    // console.log(artistData);
-    // console.log("====================================");
+    console.log("====================================");
+    console.log(artistData);
+    console.log("====================================");
     setArtistData(artistData);
   }
   useEffect(() => {
@@ -136,7 +136,7 @@ const ArtistNFTPage = ({
       );
     }
 
-    if (artistNFTData)
+    if (artistNFTData && artistData.nftCollection.chainId == chainId)
       return (
         <div className="mt-20 max-w-[85%] mx-auto">
           <h1 className="tracking-widest text-center font-semibold text-4xl text-purple-500">

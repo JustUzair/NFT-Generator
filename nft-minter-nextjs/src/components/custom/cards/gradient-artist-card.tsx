@@ -19,7 +19,7 @@ export default function ArtistGradientCard({
   className: string;
 }) {
   const router = useRouter();
-  const { chain } = useAccount();
+  const { chain, chainId } = useAccount();
 
   return (
     <div className={`h-full w-full flex`}>
@@ -53,7 +53,8 @@ export default function ArtistGradientCard({
           {artist.nftCollection &&
             artist.nftCollection.contractAddress != null &&
             artist.nftCollection.contractAddress != "" &&
-            artist.nftCollection.contractAddress.length == 42 && (
+            artist.nftCollection.contractAddress.length == 42 &&
+            artist.nftCollection.chainId == chainId && (
               <GradientButton
                 btnText="View on Block Explorer"
                 onClick={() => {

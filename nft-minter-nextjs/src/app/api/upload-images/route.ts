@@ -381,6 +381,7 @@ async function generateNFT(
 async function generateArtsFromLayers(
   attributeCount: AttributeProps,
   artistWalletAddress: string,
+  chainId: string,
   layersFiles: LayerFilesProps
 ) {
   await dbConnect();
@@ -447,6 +448,19 @@ async function generateArtsFromLayers(
         for example: artistWalletAddress: 0xA72e562f24515C060F36A2DA07e0442899D39d2c
         */
       });
+
+      if (artist) {
+        await Artists.updateOne(
+          { _id: artist._id },
+          {
+            $set: {
+              nftCollection: {
+                chainId: chainId, // UPDATE HERE
+              },
+            },
+          }
+        );
+      }
       console.log("found artist");
 
       if (!artist) {
@@ -586,6 +600,7 @@ export async function POST(req: Request, res: Response) {
   const formData = await req.formData();
   const imagesData = formData.getAll("images");
   const artistWalletAddress = formData.get("artistWalletAddress");
+  const chainId = formData.get("chainId");
 
   if (!imagesData || !artistWalletAddress) {
     return Response.json(
@@ -669,6 +684,7 @@ export async function POST(req: Request, res: Response) {
     await generateArtsFromLayers(
       attributeCount,
       artistWalletAddress as string,
+      chainId as string,
       {
         noseLayers,
         headLayers,

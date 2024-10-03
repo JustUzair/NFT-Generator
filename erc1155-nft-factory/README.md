@@ -1,3 +1,9 @@
+## Deploy Command
+
+```bash
+ forge script script/Deploy.CollectionFactory.sol --rpc-url eth_sepolia --verify --broadcast
+```
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**

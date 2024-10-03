@@ -3,9 +3,11 @@ import GradientButton from "@/components/custom/buttons/gradient";
 import GradientArtistCard from "@/components/custom/cards/gradient-artist-card";
 import Loader from "@/components/loader";
 import { Artist } from "@/lib/interfaces";
+
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useAccount } from "wagmi";
 
 export default function ArtistsPage({ params }: { params: { page: string } }) {
   const router = useRouter();
@@ -13,9 +15,10 @@ export default function ArtistsPage({ params }: { params: { page: string } }) {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  const { chainId, chain } = useAccount();
   useEffect(() => {
     fetchArtists(currentPage);
-  }, [currentPage]);
+  }, [currentPage, chainId, chain]);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -58,17 +61,22 @@ export default function ArtistsPage({ params }: { params: { page: string } }) {
     return (
       <div className="max-w-[85%] mx-auto">
         <div className="lg:grid lg:grid-cols-3 gap-4 pb-20 lg:auto-rows-[minmax(100px, auto)] flex flex-col justify-between items-center">
-          {artists.map((artist, index) => (
-            <div
-              key={artist._id}
-              className={`${getCardSize(index)} rounded-3xl w-[100%] h-[100%]`}
-            >
-              <GradientArtistCard
-                artist={artist}
-                className="!h-[100%] !w-[100%]"
-              />
-            </div>
-          ))}
+          {artists.map((artist, index) => {
+            // if (artist.nftCollection.chainId == chainId)
+            return (
+              <div
+                key={artist._id}
+                className={`${getCardSize(
+                  index
+                )} rounded-3xl w-[100%] h-[100%]`}
+              >
+                <GradientArtistCard
+                  artist={artist}
+                  className="!h-[100%] !w-[100%]"
+                />
+              </div>
+            );
+          })}
         </div>
 
         <div className="flex justify-center gap-x-10 w-full max-w-6xl pb-10">

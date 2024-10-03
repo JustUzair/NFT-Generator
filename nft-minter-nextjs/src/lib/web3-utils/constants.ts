@@ -14,6 +14,12 @@ const contractFactory = [
     factoryAbi: FactoryAbi.abi,
     erc1155Abi: ERC1155Abi.abi,
   },
+  {
+    chainId: 11155111,
+    factoryAddress: "0xb4637cF1E4f73f34F96CF3144C135f953C3fF727",
+    factoryAbi: FactoryAbi.abi,
+    erc1155Abi: ERC1155Abi.abi,
+  },
 ];
 
 function getContractFactory(chainId: number) {

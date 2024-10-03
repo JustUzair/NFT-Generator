@@ -120,11 +120,13 @@ export default function UploadForm() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    if (!chain || !chainId) return;
     const formData = new FormData();
     images.forEach((image) => {
       formData.append("images", image);
     });
     formData.append("artistWalletAddress", address as string);
+    formData.append("chainId", chain.id.toString());
 
     try {
       const response = await fetch("/api/upload-images", {
