@@ -216,7 +216,10 @@ const ArtistsLayout = () => {
       getArtistRevenue();
   }, [chainId, address, artistData]);
 
-  if (chainId && !supportedChains.includes(chainId as 137 | 80002))
+  if (
+    chainId &&
+    !supportedChains.includes(chainId as 137 | 80002 | 1 | 11155111)
+  )
     return <Error message="Please connect to the supported network" />;
   if (!chain || !chainId) {
     toast.warning(

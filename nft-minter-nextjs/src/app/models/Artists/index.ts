@@ -6,7 +6,7 @@ const artistSchema = new mongoose.Schema({
   nftCollection: {
     chainId: {
       type: Number,
-      default: 80002,
+      default: 11155111,
     },
     contractAddress: {
       type: String,

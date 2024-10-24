@@ -20,9 +20,6 @@ const Navbar = (props: Props) => {
   useEffect(() => {
     (async () => {
       if (address) {
-        // console.log("====================================");
-        // console.log(await getArtistByWalletAddress(address));
-        // console.log("====================================");
         setIsArtist((await getArtistByWalletAddress(address)) !== null);
       }
     })();
@@ -35,6 +32,22 @@ const Navbar = (props: Props) => {
   const handleProfileToggle = () => {
     setIsProfileOpen(!isProfileOpen);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   return (
     <nav className="bg-zinc-900 fixed w-full z-20 top-0 start-0 border-b border-zinc-700">
@@ -111,7 +124,6 @@ const Navbar = (props: Props) => {
             {address && !isArtist && (
               <>
                 <hr className="text-white opacity-20 w-[70%] text-center visible md:hidden lg:hidden" />
-
                 <li>
                   <Link
                     onClick={() => {
@@ -160,9 +172,7 @@ const Navbar = (props: Props) => {
                   </div>
                   <div className="hidden md:block">
                     <button
-                      onClick={() => {
-                        setIsProfileOpen(false);
-                      }}
+                      onClick={handleProfileToggle}
                       className="flex items-center py-2 px-3 text-gray-300 rounded hover:bg-zinc-700 hover:text-violet-500 transition-all duration-150 md:hover:bg-transparent border-gray-700"
                     >
                       Profile
