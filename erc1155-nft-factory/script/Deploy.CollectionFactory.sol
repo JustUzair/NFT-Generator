@@ -15,9 +15,16 @@ contract ERC1155CollectionDeployScript is Script {
     NFTCollectionFactory collectionFactory;
 
     function run() public {
-        HelperConfig helperConfig = new HelperConfig();
+        uint256 deployerKey;
+        address deployer;
+        string memory mnemonic = vm.envString("MNEMONIC");
+        console2.log(mnemonic);
+        (deployer, deployerKey) = deriveRememberKey(mnemonic, 0);
 
-        (uint256 deployerKey) = helperConfig.activeNetworkConfig();
+        if (deployer == address(0)) {
+            HelperConfig helperConfig = new HelperConfig();
+            (deployerKey) = helperConfig.activeNetworkConfig();
+        }
         vm.startBroadcast(deployerKey);
         collectionFactory = new NFTCollectionFactory(0xA72e562f24515C060F36A2DA07e0442899D39d2c);
         erc1155Collection = NFTCollection(

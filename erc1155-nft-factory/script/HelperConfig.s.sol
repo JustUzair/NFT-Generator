@@ -36,6 +36,8 @@ contract HelperConfig is Script {
         /* Activate Local Testnet Config */
         else if (block.chainid == 31337) {
             activeNetworkConfig = getOrCreateAnvilConfig();
+        } else {
+            activeNetworkConfig = getDefaultNetworkConfig();
         }
     }
 
@@ -78,6 +80,10 @@ contract HelperConfig is Script {
     }
 
     function getPolygonMainnetConfig() public view returns (NetworkConfig memory) {
+        return NetworkConfig({deployerKey: vm.envUint("PRIVATE_KEY")});
+    }
+
+    function getDefaultNetworkConfig() public view returns (NetworkConfig memory) {
         return NetworkConfig({deployerKey: vm.envUint("PRIVATE_KEY")});
     }
 }

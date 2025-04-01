@@ -1,0 +1,3 @@
+[submodule "erc1155-nft-factory/lib/openzeppelin-contracts"]
+	path = erc1155-nft-factory/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts

@@ -3,7 +3,7 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-remappings=["@openzeppelin/contracts=node_modules/@openzeppelin/contracts"]
+remappings=["@openzeppelin/contracts=lib/openzeppelin-contracts/contracts"]
 
 [rpc_endpoints]
 anvil_local="${ANVIL_LOCAL_TESTNET}"
@@ -19,6 +19,8 @@ polygon_mainnet = "${POLYGON_MAINNET}"
 optimism_mainnet = "${OPTIMISM_MAINNET}"
 arbitrum_mainnet = "${ARBITRUM_MAINNET}"
 
+buildbear_rpc="${BUILDBEAR_RPC}"
+
 
 [etherscan]
 polygon_amoy = { key = "${POLYGONSCAN_API}", url="https://api-amoy.polygonscan.com/api" }
@@ -31,3 +33,6 @@ base_mainnet = { key = "${BASESCAN_API}", url ="https://api.basescan.org/api/"}
 polygon_mainnet = { key = "${POLYGONSCAN_API}", url ="https://api.polygonscan.com/api"}
 arbitrum_mainnet = { key = "${ARBISCAN_API}", url ="https://api.arbiscan.io/api/"}
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+
+[profile.sourcify]
+url= "${VERIFIER_URL}"

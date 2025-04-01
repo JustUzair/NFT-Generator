@@ -9,11 +9,19 @@ import {console2} from "forge-std/console2.sol";
 
 contract MintFromCollection is Script {
     function run() public {
-        address collectionAddress = address(0x6EB16a8F13a5ad4193138B6Fbb22D0cDa6340ED1);
+        address collectionAddress = address(0x689aAA0d14284aea96154Aa6A980518c27E15b6b);
         require(collectionAddress != address(0), "collection address is required");
         address erc1155CollectionAddress = address(collectionAddress); // this is op sepolia testnet address only. replace with other to
-        HelperConfig helperConfig = new HelperConfig();
-        (uint256 deployerKey) = helperConfig.activeNetworkConfig();
+        uint256 deployerKey;
+        address deployer;
+        string memory mnemonic = vm.envString("MNEMONIC");
+        console2.log(mnemonic);
+        (deployer, deployerKey) = deriveRememberKey(mnemonic, 0);
+
+        if (deployer == address(0)) {
+            HelperConfig helperConfig = new HelperConfig();
+            (deployerKey) = helperConfig.activeNetworkConfig();
+        }
         vm.startBroadcast(deployerKey);
         NFTCollection erc1155Collection = NFTCollection(erc1155CollectionAddress);
         NFTCollection(erc1155Collection).mintToSender{value: 0.005 ether}(0);
